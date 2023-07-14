@@ -8,8 +8,8 @@ const page = () => {
       <Col span={12} offset={6}>
         <Typography.Title style={{textAlign: "center"}}>Welcome</Typography.Title>
         <Space style={{display:"flex"}} direction="vertical">
-            <Button type="primary" href="/login" block>Log In</Button>
-            <Button type="primary" href="/signup" block>Sign Up</Button>
+            <Button type="primary" href="/auth/login" block>Log In</Button>
+            <Button type="primary" href="/auth/signup" block>Sign Up</Button>
         </Space>
       </Col>
     </Row>
