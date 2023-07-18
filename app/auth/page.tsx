@@ -4,7 +4,7 @@ import React from 'react'
 
 const page = () => {
   return <main>
-    <Row style={{minHeight:"100vh", alignItems:"center"}}>
+    <Row style={{minHeight:"70vh", alignItems:"center"}}>
       <Col span={12} offset={6}>
         <Typography.Title style={{textAlign: "center"}}>Welcome</Typography.Title>
         <Space style={{display:"flex"}} direction="vertical">
