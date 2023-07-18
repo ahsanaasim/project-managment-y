@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 
-const layout = ({
+const Layout = ({
     children,
   }: {
     children: React.ReactNode
@@ -41,4 +41,4 @@ const layout = ({
   </NoSSR>
   }
 
-export default layout
+export default Layout
