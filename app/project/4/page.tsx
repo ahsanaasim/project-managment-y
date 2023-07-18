@@ -4,10 +4,9 @@ import { Button, Input, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import { nanoid } from 'nanoid';
 import React, { ReactNode, useState } from 'react'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import AddRowButton from '../AddRowButton';
 import ProjectFlowFooter from '../ProjectFlowFooter';
-import { MinusCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 const stakeholders = [
   "name 1",
@@ -17,6 +16,7 @@ const stakeholders = [
 ]
 
 type DataType = {
+  [key: string]: string | string[],
   key: string,
   deliverable: string,
   responsible: string[],
@@ -29,18 +29,18 @@ const Page = () => {
   const [data, setData] = useState<DataType[]>([{
     key: nanoid(),
     deliverable: "deliverable 1",
-    responsible: ["1", "2"],
-    accountable: ["2", "4", "6"],
-    consulted: ["7"],
-    informed: ["4", "5", "1"]
+    responsible: [],
+    accountable: [],
+    consulted: [],
+    informed: []
   },
   {
     key: nanoid(),
     deliverable: "deliverable 2",
-    responsible: ["1", "2"],
-    accountable: ["2", "4", "6"],
-    consulted: ["7"],
-    informed: ["4", "5", "1"]
+    responsible: [],
+    accountable: [],
+    consulted: [],
+    informed: []
   }])
     const handleOnDrop = (e: React.DragEvent, column: keyof DataType, rowKey: string) => {
       setData([...data.map(row => {
@@ -59,17 +59,27 @@ const Page = () => {
     }
 
     const onDragHandler = (e: React.DragEvent, stakeholder: string) => {
-      e.dataTransfer.setData("text/plain",stakeholder)
+      e.dataTransfer.setData("text/plain", stakeholder)
     }
 
-    const renderStakeholders = (rowData: string[], rowKey: string, column: keyof DataType) => {
+    const removeStakeholder = (name:string, rowKey: string, column: string) => {
+      setData([...data.map(row => {
+        if (rowKey == row.key) {
+          console.log(row[column]);
+          
+          return {...row, [column]: [...(row[column] as string[]).filter(stakeholder => stakeholder != name)]}
+        } else return {...row}
+      })])
+    }
+
+    const renderStakeholders = (rowData: string[], rowKey: string, column: string) => {
       return <ul style={{listStyle:"none", paddingInlineStart:0}} onDrop={e=>handleOnDrop(e, column, rowKey)} onDragOver={e=>e.preventDefault()}>
         {
           rowData.length == 0 ? <Tag>Drop Here</Tag> : <Space size={[0, 8]} wrap>
           {
               rowData.map((stakeholder, index) => {
                   return <li key={index} style={{listStylePosition:"inside", display:"inline-block"}}>
-                      <Tag color='blue'>{stakeholder}</Tag>
+                      <Tag color='blue'>{stakeholder} <CloseOutlined style={{cursor:"pointer"}} onClick={()=>removeStakeholder(stakeholder, rowKey, column)} /></Tag>
                   </li>
               } )
           }
