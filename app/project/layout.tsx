@@ -25,7 +25,7 @@ const Layout = ({
         setLoading(false)
         setUser(currentUser)
       })
-    }, [])
+    }, [router])
 
     return <NoSSR>
     <main>
