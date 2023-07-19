@@ -5,7 +5,7 @@ import { Button, Input, Space, Typography } from "antd";
 import ProjectList from "./ProjectList";
 import { FormEventHandler, useState } from "react";
 
-const page = () => {
+const Page = () => {
   const [name, setName] = useState("");
 
   const createProject:FormEventHandler = (e) => {
@@ -30,4 +30,4 @@ const page = () => {
   </Wrapper>
 }
 
-export default page;
+export default Page;
