@@ -200,7 +200,7 @@ const Page = () => {
                             <Table.Column render={(rowData, record:{key: string}, index)=><Button onClick={()=>deleteRow(table.id, record.key)} icon={<MinusCircleOutlined />} danger></Button>} />
                         </Table>
                         <br />
-                        <Button onClick={e=>addRow(table.id)} icon={<PlusCircleOutlined />}>Add Row</Button>
+                        <Button onClick={()=>addRow(table.id)} icon={<PlusCircleOutlined />}>Add Row</Button>
                         <Divider />
                     </div>
                 })
