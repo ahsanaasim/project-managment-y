@@ -39,7 +39,8 @@ const Page = () => {
   const [current, setCurrent] = useState(getCurrentPageNavkey(path));
 
   const navbarHandler: MenuProps['onClick'] = (e) => {
-    router.push(`/project/${e.key}`)
+    const projectId = (e.key == "1") ? "" : "/" + path.split("/")[2];
+    router.push(`/project${projectId}/${e.key}`)
     setCurrent(e.key);
   };
 
