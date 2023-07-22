@@ -4,7 +4,7 @@ import { Button, Divider, Input, Modal, Space, Table, Tag, Typography } from 'an
 import { nanoid } from 'nanoid';
 import React, { useState } from 'react'
 import AddRowButton from '../AddRowButton';
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import ProjectFlowFooter from '../ProjectFlowFooter';
 
 const stakeholders = [
@@ -104,6 +104,23 @@ const Page = () => {
         })])
       }
 
+      const removeStakeholder = (name:string, tableId: string, rowKey: string) => {
+        setTableData([...tableData.map(table => {
+            if (table.id == tableId) {
+                return {
+                    ...table,
+                    rows: [
+                        ...table.rows.map(row => {
+                            if (row.key == rowKey) {
+                                return {...row, stakeholders: row.stakeholders.filter(stakeholder => stakeholder != name)}
+                            } else return {...row}
+                        })
+                    ]
+                }
+            } else return {...table}
+        })])
+      }
+
       const renderStakeholders = (rowData: string[], rowKey: string, tableKey: string) => {
         return <ul style={{listStyle:"none", paddingInlineStart:0}} onDrop={e=>handleOnDrop(e, rowKey, tableKey)} onDragOver={e=>e.preventDefault()}>
           {
@@ -111,7 +128,7 @@ const Page = () => {
             {
                 rowData.map((stakeholder, index) => {
                     return <li key={index} style={{listStylePosition:"inside", display:"inline-block"}}>
-                        <Tag color='blue'>{stakeholder}</Tag>
+                        <Tag color='blue'>{stakeholder} <CloseOutlined style={{cursor:"pointer"}} onClick={()=>removeStakeholder(stakeholder, tableKey, rowKey)} /></Tag>
                     </li>
                 } )
             }
@@ -183,7 +200,7 @@ const Page = () => {
                             <Table.Column render={(rowData, record:{key: string}, index)=><Button onClick={()=>deleteRow(table.id, record.key)} icon={<MinusCircleOutlined />} danger></Button>} />
                         </Table>
                         <br />
-                        <Button onClick={e=>addRow(table.id)} icon={<PlusCircleOutlined />}>Add Row</Button>
+                        <Button onClick={()=>addRow(table.id)} icon={<PlusCircleOutlined />}>Add Row</Button>
                         <Divider />
                     </div>
                 })

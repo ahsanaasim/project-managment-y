@@ -1,9 +1,15 @@
+import AppProvider from "./context/AppProvider"
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppProvider>
+          {children}
+        </AppProvider>
+      </body>
     </html>
 }

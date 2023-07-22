@@ -1,9 +1,13 @@
 import NoSSR from "../components/NoSSR"
+import TopMenu from "../components/TopMenu";
 
-const layout = ({
+const Layout = ({
     children,
   }: {
     children: React.ReactNode
-  }) => <NoSSR>{children}</NoSSR>
+  }) => <NoSSR>
+    <TopMenu />
+    {children}
+  </NoSSR>
 
-export default layout;
+export default Layout;
