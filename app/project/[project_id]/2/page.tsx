@@ -42,7 +42,7 @@ const Page = () => {
       project_scope: scope,
       project_link_to_plan: projectLink,
     });
-    setUpdatingProject(false);
+
     router.push(`/project/${projectId}/3`);
   };
 

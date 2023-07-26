@@ -132,7 +132,6 @@ const Page = () => {
       project_stakeholders: stakeHolders,
     });
 
-    setUpdatingProject(false);
     router.push(`/project/${projectId}/4`);
   };
 

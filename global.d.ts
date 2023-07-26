@@ -37,6 +37,7 @@ type RaciItem = {
 };
 
 type WorkingGroupItem = {
+  key: string;
   project_working_group_responsibilities: string;
   project_working_group_role: string;
   project_working_group_stakeholders: string[];

@@ -196,7 +196,6 @@ const Page = () => {
       project_raci_items: data,
     });
 
-    // setUpdatingProject(false);
     router.push(`/project/${projectId}/5`);
   };
 
