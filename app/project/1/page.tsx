@@ -84,6 +84,7 @@ const Page = () => {
               project_working_group_title: "",
               project_working_group_item: [
                 {
+                  key: nanoid(),
                   project_working_group_responsibilities: "",
                   project_working_group_role: "",
                   project_working_group_stakeholders: [],
