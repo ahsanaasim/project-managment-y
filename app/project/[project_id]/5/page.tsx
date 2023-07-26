@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import AddRowButton from '../AddRowButton';
 import { CloseOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import ProjectFlowFooter from '../ProjectFlowFooter';
+import { WorkingGroupTable } from '@/global';
 
 const stakeholders = [
     "name 1",

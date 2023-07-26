@@ -2,21 +2,22 @@
 import Wrapper from '@/app/components/Wrapper';
 import { Button, Input, Space, Spin, Typography } from 'antd'
 import { getDoc, updateDoc } from 'firebase/firestore';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { FormEventHandler, useEffect, useState } from 'react'
 import useProjectRef from "@/app/hooks/useProjectRef"
+import { useProjectContext } from '@/app/context/ProjectProvider';
 
 const page = () => {
-    const [overview, setOverview] = useState("")
-    const [problem, setProblem] = useState("")
-    const [purpose, setPurpose] = useState("")
-    const [scope, setScope] = useState("")
-    const [projectLink, setProjectLink] = useState("")
-    const [projectName, setProjectName] = useState("")
-    const [loadingProject, setLoadingProject] = useState(true);
+    const {project, setProject} = useProjectContext()
+    const [overview, setOverview] = useState(project.project_overview)
+    const [problem, setProblem] = useState(project.project_problem)
+    const [purpose, setPurpose] = useState(project.project_purpose)
+    const [scope, setScope] = useState(project.project_scope)
+    const [projectLink, setProjectLink] = useState(project.project_link_to_plan)
     const [updatingProject, setUpdatingProject] = useState(false);
     const getProjectRef = useProjectRef()
     const path = usePathname();
+    const router = useRouter()
     const projectId = path.split("/")[2]
     
 
@@ -34,29 +35,30 @@ const page = () => {
             project_link_to_plan: projectLink
         })
 
+        setProject({
+            ...project, 
+            project_overview: overview,
+            project_problem: problem,
+            project_purpose: purpose,
+            project_scope: scope,
+            project_link_to_plan: projectLink
+        })
         setUpdatingProject(false)
+        router.push(`/project/${projectId}/3`)
     }
 
     useEffect(()=>{
-        (async () => {
-            const projectRef = await getProjectRef(projectId)
-            const project = await getDoc(projectRef);
-            const data = project.data();
-            setOverview(data?.project_overview)
-            setProblem(data?.project_problem)
-            setPurpose(data?.project_purpose)
-            setScope(data?.project_scope)
-            setProjectLink(data?.project_link_to_plan)
-            setProjectName(project.data()?.project_name)
-            setLoadingProject(false);
-        })()
-    }, [])
+        setOverview(project.project_overview)
+        setProblem(project.project_problem)
+        setPurpose(project.project_purpose)
+        setScope(project.project_scope)
+        setProjectLink(project.project_link_to_plan)
+    }, [project])
 
   return <main>
     <Wrapper>
-        <Spin spinning={loadingProject} tip="Loading project" style={{margin: "2rem auto", display: "block"}}>
             <Spin spinning={updatingProject} tip="Saving details">
-                <Typography.Title>{projectName}</Typography.Title>
+                <Typography.Title>{project.project_name}</Typography.Title>
                 <form onSubmit={createProjectDetails}>
                     <Space direction="vertical" size="large" style={{ display:"flex", width:"50%"}}>
                         <Space direction="vertical" style={{display:"flex"}}>
@@ -83,7 +85,6 @@ const page = () => {
                     </Space>
                 </form>
             </Spin>
-        </Spin>
     </Wrapper>
   </main>
 }

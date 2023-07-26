@@ -35,7 +35,57 @@ const Page = () => {
         // Add the new project document to the projects sub-collection with a unique ID
         await addDoc(projectsCollectionRef, {
             project_id: nanoid(),
-            project_name: name
+            project_name: name,
+            project_overview : "",
+            project_problem : "",
+            project_purpose : "",
+            project_scope : "",
+            project_link_to_plan : "",
+            project_budget : "",
+            project_outcomes_and_metrics: [{
+                project_metric: "",
+                project_outcome: "",
+                item_id: nanoid()
+            }],
+            project_stakeholders: [
+                {
+                    project_stakeholder_email : "",
+                    project_stakeholder_id : nanoid(),
+                    project_stakeholder_name : "",
+                    project_stakeholder_role : ""
+                }
+            ],
+            project_raci_items: [
+              {
+                project_raci_deliverable : "",
+                project_raci_responsible_stakeholder_ids : [],
+                project_raci_accountable_stakeholder_ids : [],
+                project_raci_consulted_stakeholder_ids : [],
+                project_raci_informed_stakeholder_ids : []
+              }
+            ],
+            project_working_groups: [
+              {
+                project_working_group_id : "",
+                project_working_group_title : "",
+                project_working_group_item: [
+                  {
+                    project_working_group_responsibilities : "",
+                    project_working_group_role : "",
+                    project_working_group_stakeholders : []
+                  }
+                ]
+              }
+            ],
+            project_documents: [],
+            project_recommendations_general: "",
+            project_recommendations_stakeholder: [
+              {
+                project_recommendations_stakeholder_id : "",
+                project_recommendations_competencies : "",
+                project_recommendations_resources : ""
+              }
+            ]
         });
 
         setProjects(await getUserProjects())
