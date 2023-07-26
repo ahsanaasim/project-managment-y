@@ -1,97 +1,106 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Input, Space, Table, Tag, Typography } from "antd";
-import { ColumnsType } from "antd/es/table";
+import { Button, Input, Space, Spin, Table, Tag, Typography } from "antd";
 import { nanoid } from "nanoid";
-import React, { FormEventHandler, ReactNode, useState } from "react";
+import React, { FormEventHandler, useEffect, useState } from "react";
 import AddRowButton from "../AddRowButton";
 import ProjectFlowFooter from "../ProjectFlowFooter";
 import { CloseOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { useProjectContext } from "@/app/context/ProjectProvider";
+import { RaciItem } from "@/global";
+import useProjectRef from "@/app/hooks/useProjectRef";
+import useProjectId from "@/app/hooks/useProjectId";
+import { useRouter } from "next/navigation";
+import { updateDoc } from "firebase/firestore";
 
-const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
+// const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
-type DataType = {
-  [key: string]: string | string[];
-  key: string;
-  deliverable: string;
-  responsible: string[];
-  accountable: string[];
-  consulted: string[];
-  informed: string[];
-};
+// type DataType = {
+//   [key: string]: string | string[];
+//   key: string;
+//   deliverable: string;
+//   responsible: string[];
+//   accountable: string[];
+//   consulted: string[];
+//   informed: string[];
+// };
 
 const Page = () => {
-  const [data, setData] = useState<DataType[]>([
-    {
-      key: nanoid(),
-      deliverable: "deliverable 1",
-      responsible: [],
-      accountable: [],
-      consulted: [],
-      informed: [],
-    },
-    {
-      key: nanoid(),
-      deliverable: "deliverable 2",
-      responsible: [],
-      accountable: [],
-      consulted: [],
-      informed: [],
-    },
-  ]);
+  const { project, setProject } = useProjectContext();
+  const [updatingProject, setUpdatingProject] = useState(false);
+  const getProjectRef = useProjectRef();
+  const projectId = useProjectId();
+  const router = useRouter();
+  // const [raciItems, setRaciItems] = useState<RaciItem[]>(
+  //   project.project_raci_items
+  // );
+  const [data, setData] = useState<RaciItem[]>(project.project_raci_items);
+
   const handleOnDrop = (
     e: React.DragEvent,
-    column: keyof DataType,
+    column: keyof RaciItem,
     rowKey: string
   ) => {
     setData([
       ...data.map((row) => {
         if (row.key == rowKey) {
-          if (column == "responsible") {
-            return {
-              ...row,
-              responsible: [
-                ...row.responsible,
-                e.dataTransfer.getData("text/plain"),
-              ],
-            };
-          } else if (column == "accountable") {
-            return {
-              ...row,
-              accountable: [
-                ...row.accountable,
-                e.dataTransfer.getData("text/plain"),
-              ],
-            };
-          } else if (column == "consulted") {
-            return {
-              ...row,
-              consulted: [
-                ...row.consulted,
-                e.dataTransfer.getData("text/plain"),
-              ],
-            };
-          } else if (column == "informed") {
-            return {
-              ...row,
-              informed: [...row.informed, e.dataTransfer.getData("text/plain")],
-            };
-          } else return { ...row };
+          return {
+            ...row,
+            [column]: [
+              ...(row[column] as string[]),
+              e.dataTransfer.getData("text/plain"),
+            ],
+          };
+          // if (column == "responsible") {
+          //   return {
+          //     ...row,
+          //     responsible: [
+          //       ...row.project_raci_responsible_stakeholder_ids,
+          //       e.dataTransfer.getData("text/plain"),
+          //     ],
+          //   };
+          // } else if (column == "accountable") {
+          //   return {
+          //     ...row,
+          //     accountable: [
+          //       ...row.project_raci_accountable_stakeholder_ids,
+          //       e.dataTransfer.getData("text/plain"),
+          //     ],
+          //   };
+          // } else if (column == "consulted") {
+          //   return {
+          //     ...row,
+          //     consulted: [
+          //       ...row.project_raci_consulted_stakeholder_ids,
+          //       e.dataTransfer.getData("text/plain"),
+          //     ],
+          //   };
+          // } else if (column == "informed") {
+          //   return {
+          //     ...row,
+          //     informed: [
+          //       ...row.project_raci_informed_stakeholder_ids,
+          //       e.dataTransfer.getData("text/plain"),
+          //     ],
+          //   };
+          // } else return { ...row };
         } else return { ...row };
       }),
     ]);
   };
 
-  const onDragHandler = (e: React.DragEvent, stakeholder: string) => {
-    e.dataTransfer.setData("text/plain", stakeholder);
+  const onDragHandler = (
+    e: React.DragEvent,
+    // stakeholderName: string,
+    stakeholderId: string
+  ) => {
+    e.dataTransfer.setData("text/plain", stakeholderId);
   };
 
   const removeStakeholder = (name: string, rowKey: string, column: string) => {
     setData([
       ...data.map((row) => {
         if (rowKey == row.key) {
-          console.log(row[column]);
-
           return {
             ...row,
             [column]: [
@@ -103,6 +112,12 @@ const Page = () => {
         } else return { ...row };
       }),
     ]);
+  };
+
+  const getStakeholderName = (id: string) => {
+    return project.project_stakeholders.filter(
+      (stakeholder) => stakeholder.project_stakeholder_id == id
+    )[0].project_stakeholder_name;
   };
 
   const renderStakeholders = (
@@ -130,7 +145,7 @@ const Page = () => {
                   }}
                 >
                   <Tag color="blue">
-                    {stakeholder}{" "}
+                    {getStakeholderName(stakeholder)}{" "}
                     <CloseOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() =>
@@ -152,11 +167,11 @@ const Page = () => {
       ...data,
       {
         key: nanoid(),
-        deliverable: "",
-        responsible: [],
-        accountable: [],
-        consulted: [],
-        informed: [],
+        project_raci_deliverable: "",
+        project_raci_responsible_stakeholder_ids: [],
+        project_raci_accountable_stakeholder_ids: [],
+        project_raci_consulted_stakeholder_ids: [],
+        project_raci_informed_stakeholder_ids: [],
       },
     ]);
   };
@@ -165,93 +180,154 @@ const Page = () => {
     setData([...data.filter((row) => row.key != key)]);
   };
 
-  const saveRaci: FormEventHandler = async (e) => {};
+  const saveRaci: FormEventHandler = async (e) => {
+    e.preventDefault();
+
+    setUpdatingProject(true);
+
+    const projectDocRef = await getProjectRef(projectId);
+
+    await updateDoc(projectDocRef, {
+      project_raci_items: data,
+    });
+
+    setProject({
+      ...project,
+      project_raci_items: data,
+    });
+
+    // setUpdatingProject(false);
+    router.push(`/project/${projectId}/5`);
+  };
+
+  const changeDeliverable = (rowKey: string, deliverable: string) => {
+    setData([
+      ...data.map((row) => {
+        if (row.key == rowKey) {
+          return { ...row, project_raci_deliverable: deliverable };
+        } else return { ...row };
+      }),
+    ]);
+  };
+
+  useEffect(() => {
+    setData([...project.project_raci_items]);
+  }, [project]);
 
   return (
     <Wrapper>
-      <Typography.Title>RACI</Typography.Title>
-      <Typography.Text>Stakeholders</Typography.Text>
-      <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
-        <Space size={[0, 8]} wrap>
-          {stakeholders.map((stakeholder, index) => {
-            return (
-              <li
-                key={index}
-                style={{
-                  listStylePosition: "inside",
-                  display: "inline-block",
-                  cursor: "grabbing",
-                }}
-                draggable
-                onDragStart={(e) => onDragHandler(e, stakeholder)}
-              >
-                <Tag color="blue">{stakeholder}</Tag>
-              </li>
-            );
-          })}
-        </Space>
-      </ul>
-      <form>
-        <Table
-          dataSource={data}
-          style={{ marginTop: "2rem" }}
-          pagination={false}
-        >
-          <Table.Column
-            title="Deliverable"
-            dataIndex="deliverable"
-            key="deliverable"
-            render={(rowData, record: { key: string }, index) => (
-              <Input value={rowData} />
-            )}
-          />
-          <Table.Column
-            title="Responsible"
-            dataIndex="responsible"
-            key="responsible"
-            render={(rowData, record: { key: string }, index) =>
-              renderStakeholders(rowData, record.key, "responsible")
-            }
-          />
-          <Table.Column
-            title="Accountable"
-            dataIndex="accountable"
-            key="accountable"
-            render={(rowData, record: { key: string }, index) =>
-              renderStakeholders(rowData, record.key, "accountable")
-            }
-          />
-          <Table.Column
-            title="Consulted"
-            dataIndex="consulted"
-            key="consulted"
-            render={(rowData, record: { key: string }, index) =>
-              renderStakeholders(rowData, record.key, "consulted")
-            }
-          />
-          <Table.Column
-            title="Informed"
-            dataIndex="informed"
-            key="informed"
-            render={(rowData, record: { key: string }, index) =>
-              renderStakeholders(rowData, record.key, "informed")
-            }
-          />
-          <Table.Column
-            render={(rowData, record: { key: string }, index) => (
-              <Button
-                onClick={() => deleteRow(record.key)}
-                icon={<MinusCircleOutlined />}
-                danger
-              ></Button>
-            )}
-          />
-        </Table>
-        <br />
-        <br />
-        <AddRowButton addRow={addRow} />
-        <ProjectFlowFooter previous={3} submitForm={saveRaci} />
-      </form>
+      <Spin tip="Saving RACI items" spinning={updatingProject}>
+        <Typography.Title>RACI</Typography.Title>
+        <Typography.Text>Stakeholders</Typography.Text>
+        <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
+          <Space size={[0, 8]} wrap>
+            {project.project_stakeholders.map((stakeholder, index) => {
+              return (
+                <li
+                  key={index}
+                  style={{
+                    listStylePosition: "inside",
+                    display: "inline-block",
+                    cursor: "grabbing",
+                  }}
+                  draggable
+                  onDragStart={(e) =>
+                    onDragHandler(
+                      e,
+                      // stakeholder.project_stakeholder_name,
+                      stakeholder.project_stakeholder_id
+                    )
+                  }
+                >
+                  <Tag color="blue">{stakeholder.project_stakeholder_name}</Tag>
+                </li>
+              );
+            })}
+          </Space>
+        </ul>
+        <form>
+          <Table
+            dataSource={data}
+            style={{ marginTop: "2rem" }}
+            pagination={false}
+          >
+            <Table.Column
+              title="Deliverable"
+              dataIndex="project_raci_deliverable"
+              key="project_raci_deliverable"
+              render={(rowData, record: { key: string }, index) => (
+                <Input
+                  value={rowData}
+                  onChange={(e) =>
+                    changeDeliverable(record.key, e.target.value)
+                  }
+                />
+              )}
+            />
+            <Table.Column
+              title="Responsible"
+              dataIndex="project_raci_responsible_stakeholder_ids"
+              key="project_raci_responsible_stakeholder_ids"
+              render={(rowData, record: { key: string }, index) =>
+                renderStakeholders(
+                  rowData,
+                  record.key,
+                  "project_raci_responsible_stakeholder_ids"
+                )
+              }
+            />
+            <Table.Column
+              title="Accountable"
+              dataIndex="project_raci_accountable_stakeholder_ids"
+              key="project_raci_accountable_stakeholder_ids"
+              render={(rowData, record: { key: string }, index) =>
+                renderStakeholders(
+                  rowData,
+                  record.key,
+                  "project_raci_accountable_stakeholder_ids"
+                )
+              }
+            />
+            <Table.Column
+              title="Consulted"
+              dataIndex="project_raci_consulted_stakeholder_ids"
+              key="project_raci_consulted_stakeholder_ids"
+              render={(rowData, record: { key: string }, index) =>
+                renderStakeholders(
+                  rowData,
+                  record.key,
+                  "project_raci_consulted_stakeholder_ids"
+                )
+              }
+            />
+            <Table.Column
+              title="Informed"
+              dataIndex="project_raci_informed_stakeholder_ids"
+              key="project_raci_informed_stakeholder_ids"
+              render={(rowData, record: { key: string }, index) =>
+                renderStakeholders(
+                  rowData,
+                  record.key,
+                  "project_raci_informed_stakeholder_ids"
+                )
+              }
+            />
+            <Table.Column
+              render={(rowData, record: { key: string }, index) => (
+                <Button
+                  onClick={() => deleteRow(record.key)}
+                  icon={<MinusCircleOutlined />}
+                  danger
+                ></Button>
+              )}
+            />
+          </Table>
+          <br />
+          <br />
+          <AddRowButton addRow={addRow} />
+          <ProjectFlowFooter previous={3} submitForm={saveRaci} />
+        </form>
+      </Spin>
     </Wrapper>
   );
 };

@@ -117,10 +117,6 @@ const Page = () => {
     e.preventDefault();
     setUpdatingProject(true);
 
-    console.log(budget);
-    console.log(outcomes);
-    console.log(stakeHolders);
-
     const projectDocRef = await getProjectRef(projectId);
 
     await updateDoc(projectDocRef, {
