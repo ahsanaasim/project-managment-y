@@ -95,11 +95,11 @@ const Page = () => {
           project_documents: [],
           project_recommendations_general: "",
           project_recommendations_stakeholder: [
-            {
-              project_recommendations_stakeholder_id: nanoid(),
-              project_recommendations_competencies: "",
-              project_recommendations_resources: "",
-            },
+            // {
+            //   project_recommendations_stakeholder_id: nanoid(),
+            //   project_recommendations_competencies: "",
+            //   project_recommendations_resources: "",
+            // },
           ],
         });
 

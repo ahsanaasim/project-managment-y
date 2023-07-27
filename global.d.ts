@@ -50,6 +50,7 @@ type WorkingGroup = {
 };
 
 type recommendationsStakeholder = {
+  key: string;
   project_recommendations_stakeholder_id: string;
   project_recommendations_competencies: string;
   project_recommendations_resources: string;

@@ -119,10 +119,23 @@ const Page = () => {
 
     const projectDocRef = await getProjectRef(projectId);
 
+    const project_recommendations_stakeholder = stakeHolders.map(
+      (stakeHolder) => {
+        return {
+          key: nanoid(),
+          project_recommendations_stakeholder_id:
+            stakeHolder.project_stakeholder_id,
+          project_recommendations_competencies: "",
+          project_recommendations_resources: "",
+        };
+      }
+    );
+
     await updateDoc(projectDocRef, {
       project_budget: budget,
       project_outcomes_and_metrics: outcomes,
       project_stakeholders: stakeHolders,
+      project_recommendations_stakeholder,
     });
 
     setProject({
