@@ -32,32 +32,6 @@ import { updateDoc } from "firebase/firestore";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
-  // const [tableData, setTableData] = useState<WorkingGroupTable[]>([
-  //   {
-  //     id: nanoid(),
-  //     name: "table 1",
-  //     rows: [
-  //       {
-  //         key: nanoid(),
-  //         role: "role 1",
-  //         responsibilities: "responsibility 1",
-  //         stakeholders: ["a", "b", "c"],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: nanoid(),
-  //     name: "table 2",
-  //     rows: [
-  //       {
-  //         key: nanoid(),
-  //         role: "role 2",
-  //         responsibilities: "responsibility 2",
-  //         stakeholders: ["a", "b", "c"],
-  //       },
-  //     ],
-  //   },
-  // ]);
   const [tableData, setTableData] = useState<WorkingGroup[]>(
     project.project_working_groups
   );
