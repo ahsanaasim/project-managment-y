@@ -3,20 +3,22 @@ import { useAppContext } from "../context/AppProvider";
 import { db } from "../firebase";
 
 const useProjectsCollectionRef = () => {
-    const user = useAppContext();
+  const { user } = useAppContext();
 
-    const getProjectsCollectionRef = async () => {
-        const usersCollectionRef = collection(db, "users");
-        const userQuery = query(usersCollectionRef, where("user_email_address", "==", user?.
-        email));
-        const userDoc = (await getDocs(userQuery)).docs[0];
-        const userDocRef = doc(db, "users", userDoc.id);
-        const projectsCollectionRef = collection(userDocRef, "projects");
+  const getProjectsCollectionRef = async () => {
+    const usersCollectionRef = collection(db, "users");
+    const userQuery = query(
+      usersCollectionRef,
+      where("user_email_address", "==", user?.email)
+    );
+    const userDoc = (await getDocs(userQuery)).docs[0];
+    const userDocRef = doc(db, "users", userDoc.id);
+    const projectsCollectionRef = collection(userDocRef, "projects");
 
-        return projectsCollectionRef;
-    }
+    return projectsCollectionRef;
+  };
 
-    return getProjectsCollectionRef;
-}
+  return getProjectsCollectionRef;
+};
 
 export default useProjectsCollectionRef;

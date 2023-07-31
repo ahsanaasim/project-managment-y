@@ -3,7 +3,7 @@ import { useAppContext } from "../context/AppProvider";
 import { db } from "../firebase";
 
 const useUserId = () => {
-  const user = useAppContext();
+  const { user } = useAppContext();
 
   const getUserId = async () => {
     const usersCollectionRef = collection(db, "users");

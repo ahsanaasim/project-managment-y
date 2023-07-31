@@ -17,13 +17,18 @@ import { db } from "@/app/firebase";
 import { useAppContext } from "@/app/context/AppProvider";
 import { nanoid } from "nanoid";
 import useUserProjects from "@/app/hooks/useUserProjects";
+import TopMenu from "@/app/components/TopMenu";
+import NoSSR from "@/app/components/NoSSR";
+import FullpageLoader from "@/app/components/FullpageLoader";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [name, setName] = useState("");
   const [projects, setProjects] = useState<DocumentData[]>([]);
   const [fetchingProjects, setFetchingProjects] = useState(true);
-  const user = useAppContext();
+  const { user, loadingUser } = useAppContext();
   const getUserProjects = useUserProjects();
+  const router = useRouter();
 
   const createProject: FormEventHandler = async (e) => {
     e.preventDefault();
@@ -94,13 +99,7 @@ const Page = () => {
           ],
           project_documents: [],
           project_recommendations_general: "",
-          project_recommendations_stakeholder: [
-            // {
-            //   project_recommendations_stakeholder_id: nanoid(),
-            //   project_recommendations_competencies: "",
-            //   project_recommendations_resources: "",
-            // },
-          ],
+          project_recommendations_stakeholder: [],
         });
 
         setProjects(await getUserProjects());
@@ -114,39 +113,49 @@ const Page = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      setProjects(await getUserProjects());
-      setFetchingProjects(false);
-    })();
-  }, []);
+    if (!loadingUser) {
+      if (!user) {
+        router.push("/auth");
+      } else {
+        (async () => {
+          setProjects(await getUserProjects());
+          setFetchingProjects(false);
+        })();
+      }
+    }
+  }, [loadingUser]);
 
-  console.table(projects);
+  if (loadingUser || !user) return <FullpageLoader />;
 
   return (
-    <Wrapper>
-      <Typography.Title>Create a New Project</Typography.Title>
-      <form onSubmit={createProject}>
-        <Space
-          direction="vertical"
-          size="large"
-          style={{ display: "flex", width: "50%" }}
-        >
-          <Space direction="vertical" style={{ display: "flex" }}>
-            <label htmlFor="project-name">Project Name</label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              name="project-name"
-              id="project-name"
-            />
+    <NoSSR>
+      <TopMenu />
+
+      <Wrapper>
+        <Typography.Title>Create a New Project</Typography.Title>
+        <form onSubmit={createProject}>
+          <Space
+            direction="vertical"
+            size="large"
+            style={{ display: "flex", width: "50%" }}
+          >
+            <Space direction="vertical" style={{ display: "flex" }}>
+              <label htmlFor="project-name">Project Name</label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                name="project-name"
+                id="project-name"
+              />
+            </Space>
+            <Button htmlType="submit" type="primary" block>
+              Create Project
+            </Button>
           </Space>
-          <Button htmlType="submit" type="primary" block>
-            Create Project
-          </Button>
-        </Space>
-      </form>
-      <ProjectList projects={projects} fetchingProjects={fetchingProjects} />
-    </Wrapper>
+        </form>
+        <ProjectList projects={projects} fetchingProjects={fetchingProjects} />
+      </Wrapper>
+    </NoSSR>
   );
 };
 

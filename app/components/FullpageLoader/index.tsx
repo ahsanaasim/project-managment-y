@@ -1,20 +1,19 @@
-"use client";
 import { Spin } from "antd";
 import React from "react";
 
-const Loading = () => {
+const FullpageLoader = () => {
   return (
-    <div
+    <main
       style={{
+        minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "100vh",
       }}
     >
       <Spin />
-    </div>
+    </main>
   );
 };
 
-export default Loading;
+export default FullpageLoader;
