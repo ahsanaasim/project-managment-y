@@ -2,9 +2,11 @@
 import Wrapper from "@/app/components/Wrapper";
 import {
   Button,
+  Col,
   Divider,
   Input,
   Modal,
+  Row,
   Space,
   Spin,
   Table,
@@ -27,6 +29,7 @@ import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
+import Navbar from "@/app/components/Navbar";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
@@ -94,6 +97,12 @@ const Page = () => {
             project_working_group_item: [
               ...table.project_working_group_item.map((row) => {
                 if (row.key == rowKey) {
+                  if (
+                    row.project_working_group_stakeholders.includes(
+                      e.dataTransfer.getData("text/plain")
+                    )
+                  )
+                    return { ...row };
                   return {
                     ...row,
                     project_working_group_stakeholders: [
@@ -266,148 +275,158 @@ const Page = () => {
   };
 
   return (
-    <Wrapper>
-      <Spin spinning={updatingProject} tip="Saving working groups">
-        <div>
-          <Modal
-            title="Create Working Group"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            <form>
-              <Input
-                value={newGroupName}
-                onChange={(e) => setNewGroupName(e.target.value)}
-                placeholder="Working group name"
-              />
-            </form>
-          </Modal>
-          <Typography.Title>Working Groups</Typography.Title>
-          <Typography.Text>Stakeholders</Typography.Text>
-          <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
-            <Space size={[0, 8]} wrap>
-              {project.project_stakeholders.map((stakeholder, index) => {
-                return (
-                  <li
-                    key={index}
-                    style={{
-                      listStylePosition: "inside",
-                      display: "inline-block",
-                      cursor: "grabbing",
-                    }}
-                    draggable
-                    onDragStart={(e) =>
-                      onDragHandler(e, stakeholder.project_stakeholder_id)
-                    }
-                  >
-                    <Tag color="blue">
-                      {stakeholder.project_stakeholder_name}
-                    </Tag>
-                  </li>
-                );
-              })}
-            </Space>
-          </ul>
-          <form onSubmit={saveWorkingGroups}>
-            {tableData.map((table, index) => {
-              return (
-                <div key={index} style={{ marginTop: "1rem" }}>
-                  <Typography.Text>
-                    {table.project_working_group_title}
-                  </Typography.Text>
-                  <Table
-                    dataSource={table.project_working_group_item}
-                    style={{ marginTop: "2rem" }}
-                    pagination={false}
-                  >
-                    <Table.Column
-                      title="Role"
-                      dataIndex="project_working_group_role"
-                      key="project_working_group_role"
-                      render={(rowData, record: { key: string }, index) => (
-                        <Input
-                          value={rowData}
-                          onChange={(e) =>
-                            changeRoleResponsibility(
-                              table.project_working_group_id,
+    <Row>
+      <Col span={4}>
+        <Navbar />
+      </Col>
+      <Col span={20}>
+        <Wrapper>
+          <Spin spinning={updatingProject} tip="Saving working groups">
+            <div>
+              <Modal
+                title="Create Working Group"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+              >
+                <form>
+                  <Input
+                    value={newGroupName}
+                    onChange={(e) => setNewGroupName(e.target.value)}
+                    placeholder="Working group name"
+                  />
+                </form>
+              </Modal>
+              <Typography.Title>Working Groups</Typography.Title>
+              <Typography.Text>Stakeholders</Typography.Text>
+              <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
+                <Space size={[0, 8]} wrap>
+                  {project.project_stakeholders.map((stakeholder, index) => {
+                    return (
+                      <li
+                        key={index}
+                        style={{
+                          listStylePosition: "inside",
+                          display: "inline-block",
+                          cursor: "grabbing",
+                        }}
+                        draggable
+                        onDragStart={(e) =>
+                          onDragHandler(e, stakeholder.project_stakeholder_id)
+                        }
+                      >
+                        <Tag color="blue">
+                          {stakeholder.project_stakeholder_name}
+                        </Tag>
+                      </li>
+                    );
+                  })}
+                </Space>
+              </ul>
+              <form onSubmit={saveWorkingGroups}>
+                {tableData.map((table, index) => {
+                  return (
+                    <div key={index} style={{ marginTop: "1rem" }}>
+                      <Typography.Text>
+                        {table.project_working_group_title}
+                      </Typography.Text>
+                      <Table
+                        dataSource={table.project_working_group_item}
+                        style={{ marginTop: "2rem" }}
+                        pagination={false}
+                      >
+                        <Table.Column
+                          title="Role"
+                          dataIndex="project_working_group_role"
+                          key="project_working_group_role"
+                          render={(rowData, record: { key: string }, index) => (
+                            <Input
+                              value={rowData}
+                              onChange={(e) =>
+                                changeRoleResponsibility(
+                                  table.project_working_group_id,
+                                  record.key,
+                                  "project_working_group_role",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                        />
+                        <Table.Column
+                          title="Responsibilities"
+                          dataIndex="project_working_group_responsibilities"
+                          key="project_working_group_responsibilities"
+                          render={(rowData, record: { key: string }, index) => (
+                            <Input
+                              value={rowData}
+                              onChange={(e) =>
+                                changeRoleResponsibility(
+                                  table.project_working_group_id,
+                                  record.key,
+                                  "project_working_group_responsibilities",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                        />
+                        <Table.Column
+                          title="Stakeholders"
+                          dataIndex="project_working_group_stakeholders"
+                          key="project_working_group_stakeholders"
+                          render={(rowData, record: { key: string }, index) =>
+                            renderStakeholders(
+                              rowData,
                               record.key,
-                              "project_working_group_role",
-                              e.target.value
+                              table.project_working_group_id
                             )
                           }
                         />
-                      )}
-                    />
-                    <Table.Column
-                      title="Responsibilities"
-                      dataIndex="project_working_group_responsibilities"
-                      key="project_working_group_responsibilities"
-                      render={(rowData, record: { key: string }, index) => (
-                        <Input
-                          value={rowData}
-                          onChange={(e) =>
-                            changeRoleResponsibility(
-                              table.project_working_group_id,
-                              record.key,
-                              "project_working_group_responsibilities",
-                              e.target.value
-                            )
-                          }
+                        <Table.Column
+                          render={(rowData, record: { key: string }, index) => (
+                            <Button
+                              onClick={() =>
+                                deleteRow(
+                                  table.project_working_group_id,
+                                  record.key
+                                )
+                              }
+                              icon={<MinusCircleOutlined />}
+                              danger
+                            ></Button>
+                          )}
                         />
-                      )}
-                    />
-                    <Table.Column
-                      title="Stakeholders"
-                      dataIndex="project_working_group_stakeholders"
-                      key="project_working_group_stakeholders"
-                      render={(rowData, record: { key: string }, index) =>
-                        renderStakeholders(
-                          rowData,
-                          record.key,
-                          table.project_working_group_id
-                        )
-                      }
-                    />
-                    <Table.Column
-                      render={(rowData, record: { key: string }, index) => (
-                        <Button
-                          onClick={() =>
-                            deleteRow(
-                              table.project_working_group_id,
-                              record.key
-                            )
-                          }
-                          icon={<MinusCircleOutlined />}
-                          danger
-                        ></Button>
-                      )}
-                    />
-                  </Table>
-                  <br />
-                  <Button
-                    onClick={() => addRow(table.project_working_group_id)}
-                    icon={<PlusCircleOutlined />}
-                  >
-                    Add Row
-                  </Button>
-                  <Divider />
-                </div>
-              );
-            })}
-            <br />
-            <Button
-              type="primary"
-              onClick={addTable}
-              icon={<PlusCircleOutlined />}
-            >
-              Add Working Group
-            </Button>
-            <ProjectFlowFooter previous={4} submitForm={saveWorkingGroups} />
-          </form>
-        </div>
-      </Spin>
-    </Wrapper>
+                      </Table>
+                      <br />
+                      <Button
+                        onClick={() => addRow(table.project_working_group_id)}
+                        icon={<PlusCircleOutlined />}
+                      >
+                        Add Row
+                      </Button>
+                      <Divider />
+                    </div>
+                  );
+                })}
+                <br />
+                <Button
+                  type="primary"
+                  onClick={addTable}
+                  icon={<PlusCircleOutlined />}
+                >
+                  Add Working Group
+                </Button>
+                <ProjectFlowFooter
+                  previous={4}
+                  submitForm={saveWorkingGroups}
+                />
+              </form>
+            </div>
+          </Spin>
+        </Wrapper>
+      </Col>
+    </Row>
   );
 };
 

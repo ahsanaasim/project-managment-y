@@ -11,6 +11,7 @@ import useProjectRef from "@/app/hooks/useProjectRef";
 import { usePathname, useRouter } from "next/navigation";
 import useProjectId from "@/app/hooks/useProjectId";
 import { updateDoc } from "firebase/firestore";
+import Navbar from "@/app/components/Navbar";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -149,160 +150,171 @@ const Page = () => {
   };
 
   return (
-    <Wrapper>
-      <Spin spinning={updatingProject} tip="Saving stakeholders">
-        <Typography.Title>{project.project_name}</Typography.Title>
-        <form onSubmit={saveStakeholders}>
-          <Space size="large" direction="vertical" style={{ display: "flex" }}>
-            {/* 1st section */}
-            <Space direction="vertical" style={{ display: "flex" }}>
-              <label htmlFor="budget">Budget</label>
-              <Input
-                name="budget"
-                id="budget"
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-              />
-            </Space>
-            {/* 2nd section */}
-            <Row gutter={20}>
-              <Col span={12}>
-                <label htmlFor="outcome">Outcome</label>
-              </Col>
-              <Col span={12}>
-                <label htmlFor="metric">Metric</label>
-              </Col>
-            </Row>
-            {outcomes.map((outcome, index) => (
-              <Row key={index} gutter={20}>
-                <Col span={12}>
+    <Row>
+      <Col span={4}>
+        <Navbar />
+      </Col>
+      <Col span={20}>
+        <Wrapper>
+          <Spin spinning={updatingProject} tip="Saving stakeholders">
+            <Typography.Title>{project.project_name}</Typography.Title>
+            <form onSubmit={saveStakeholders}>
+              <Space
+                size="large"
+                direction="vertical"
+                style={{ display: "flex" }}
+              >
+                {/* 1st section */}
+                <Space direction="vertical" style={{ display: "flex" }}>
+                  <label htmlFor="budget">Budget</label>
                   <Input
-                    value={outcome.project_outcome}
-                    onChange={(e) =>
-                      changeOutcomeMetric(
-                        outcome.item_id,
-                        e.target.value,
-                        "project_outcome"
-                      )
-                    }
-                    name="outcome"
-                    id="outcome"
+                    name="budget"
+                    id="budget"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
                   />
-                </Col>
-                <Col span={12}>
-                  <div style={{ display: "flex", gap: 20 }}>
-                    <Input
-                      value={outcome.project_metric}
-                      onChange={(e) =>
-                        changeOutcomeMetric(
-                          outcome.item_id,
-                          e.target.value,
-                          "project_metric"
-                        )
-                      }
-                      style={{ width: "100%" }}
-                      name="metric"
-                      id="metric"
-                    />
-                    <Button
-                      onClick={() => removeField(outcome.item_id)}
-                      icon={<MinusCircleOutlined />}
-                      danger
-                    ></Button>
-                  </div>
-                </Col>
-              </Row>
-            ))}
-            <Button
-              type="primary"
-              onClick={addField}
-              icon={<PlusCircleOutlined />}
-            >
-              Add Field
-            </Button>
-            {/* 3rd section */}
-            <Row gutter={20}>
-              <Col span={8}>
-                <label htmlFor="outcome">Stakeholders</label>
-              </Col>
-              <Col span={8}>
-                <label htmlFor="metric">Role</label>
-              </Col>
-              <Col span={8}>
-                <label htmlFor="metric">Email Address</label>
-              </Col>
-            </Row>
-            {stakeHolders.map((stakeHolder, index) => (
-              <Row key={index} gutter={20}>
-                <Col span={8}>
-                  <Input
-                    value={stakeHolder.project_stakeholder_name}
-                    onChange={(e) =>
-                      changeStakeholders(
-                        stakeHolder.project_stakeholder_id,
-                        e.target.value,
-                        "project_stakeholder_name"
-                      )
-                    }
-                    name="stakeholder-name"
-                    id="stakeholder-name"
-                  />
-                </Col>
-                <Col span={8}>
-                  <Input
-                    value={stakeHolder.project_stakeholder_role}
-                    onChange={(e) =>
-                      changeStakeholders(
-                        stakeHolder.project_stakeholder_id,
-                        e.target.value,
-                        "project_stakeholder_role"
-                      )
-                    }
-                    name="role"
-                    id="role"
-                  />
-                </Col>
-                <Col span={8}>
-                  <div style={{ display: "flex", gap: 20 }}>
-                    <Input
-                      value={stakeHolder.project_stakeholder_email}
-                      onChange={(e) =>
-                        changeStakeholders(
-                          stakeHolder.project_stakeholder_id,
-                          e.target.value,
-                          "project_stakeholder_email"
-                        )
-                      }
-                      style={{ width: "100%" }}
-                      type="email"
-                      name="email"
-                      id="email"
-                    />
-                    <Button
-                      onClick={() =>
-                        removeStakeholderField(
-                          stakeHolder.project_stakeholder_id
-                        )
-                      }
-                      icon={<MinusCircleOutlined />}
-                      danger
-                    ></Button>
-                  </div>
-                </Col>
-              </Row>
-            ))}
-            <Button
-              type="primary"
-              onClick={addStakeholderField}
-              icon={<PlusCircleOutlined />}
-            >
-              Add Field
-            </Button>
-          </Space>
-          <ProjectFlowFooter previous={2} submitForm={saveStakeholders} />
-        </form>
-      </Spin>
-    </Wrapper>
+                </Space>
+                {/* 2nd section */}
+                <Row gutter={20}>
+                  <Col span={12}>
+                    <label htmlFor="outcome">Outcome</label>
+                  </Col>
+                  <Col span={12}>
+                    <label htmlFor="metric">Metric</label>
+                  </Col>
+                </Row>
+                {outcomes.map((outcome, index) => (
+                  <Row key={index} gutter={20}>
+                    <Col span={12}>
+                      <Input
+                        value={outcome.project_outcome}
+                        onChange={(e) =>
+                          changeOutcomeMetric(
+                            outcome.item_id,
+                            e.target.value,
+                            "project_outcome"
+                          )
+                        }
+                        name="outcome"
+                        id="outcome"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <div style={{ display: "flex", gap: 20 }}>
+                        <Input
+                          value={outcome.project_metric}
+                          onChange={(e) =>
+                            changeOutcomeMetric(
+                              outcome.item_id,
+                              e.target.value,
+                              "project_metric"
+                            )
+                          }
+                          style={{ width: "100%" }}
+                          name="metric"
+                          id="metric"
+                        />
+                        <Button
+                          onClick={() => removeField(outcome.item_id)}
+                          icon={<MinusCircleOutlined />}
+                          danger
+                        ></Button>
+                      </div>
+                    </Col>
+                  </Row>
+                ))}
+                <Button
+                  type="primary"
+                  onClick={addField}
+                  icon={<PlusCircleOutlined />}
+                >
+                  Add Field
+                </Button>
+                {/* 3rd section */}
+                <Row gutter={20}>
+                  <Col span={8}>
+                    <label htmlFor="outcome">Stakeholders</label>
+                  </Col>
+                  <Col span={8}>
+                    <label htmlFor="metric">Role</label>
+                  </Col>
+                  <Col span={8}>
+                    <label htmlFor="metric">Email Address</label>
+                  </Col>
+                </Row>
+                {stakeHolders.map((stakeHolder, index) => (
+                  <Row key={index} gutter={20}>
+                    <Col span={8}>
+                      <Input
+                        value={stakeHolder.project_stakeholder_name}
+                        onChange={(e) =>
+                          changeStakeholders(
+                            stakeHolder.project_stakeholder_id,
+                            e.target.value,
+                            "project_stakeholder_name"
+                          )
+                        }
+                        name="stakeholder-name"
+                        id="stakeholder-name"
+                      />
+                    </Col>
+                    <Col span={8}>
+                      <Input
+                        value={stakeHolder.project_stakeholder_role}
+                        onChange={(e) =>
+                          changeStakeholders(
+                            stakeHolder.project_stakeholder_id,
+                            e.target.value,
+                            "project_stakeholder_role"
+                          )
+                        }
+                        name="role"
+                        id="role"
+                      />
+                    </Col>
+                    <Col span={8}>
+                      <div style={{ display: "flex", gap: 20 }}>
+                        <Input
+                          value={stakeHolder.project_stakeholder_email}
+                          onChange={(e) =>
+                            changeStakeholders(
+                              stakeHolder.project_stakeholder_id,
+                              e.target.value,
+                              "project_stakeholder_email"
+                            )
+                          }
+                          style={{ width: "100%" }}
+                          type="email"
+                          name="email"
+                          id="email"
+                        />
+                        <Button
+                          onClick={() =>
+                            removeStakeholderField(
+                              stakeHolder.project_stakeholder_id
+                            )
+                          }
+                          icon={<MinusCircleOutlined />}
+                          danger
+                        ></Button>
+                      </div>
+                    </Col>
+                  </Row>
+                ))}
+                <Button
+                  type="primary"
+                  onClick={addStakeholderField}
+                  icon={<PlusCircleOutlined />}
+                >
+                  Add Field
+                </Button>
+              </Space>
+              <ProjectFlowFooter previous={2} submitForm={saveStakeholders} />
+            </form>
+          </Spin>
+        </Wrapper>
+      </Col>
+    </Row>
   );
 };
 

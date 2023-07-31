@@ -1,6 +1,6 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, List, Spin, Typography, message } from "antd";
+import { Button, Col, List, Row, Space, Spin, Typography, message } from "antd";
 import React, {
   ChangeEvent,
   FormEventHandler,
@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import Link from "next/link";
+import Navbar from "@/app/components/Navbar";
+import { FileOutlined } from "@ant-design/icons";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -39,8 +41,8 @@ const Page = () => {
 
   const uploadDocuments: FormEventHandler = async (e) => {
     e.preventDefault();
-    setUploading(true);
     if (fileList) {
+      setUploading(true);
       const filesArray = Array.from(fileList);
       const fileNames = [];
 
@@ -54,7 +56,6 @@ const Page = () => {
           fileNames.push(fileURL);
         } catch (error) {
           message.error("Cannot upload file");
-          // console.log(error instanceof FirebaseError ? error : error);
         }
       }
 
@@ -71,40 +72,50 @@ const Page = () => {
 
       router.push(`/project/${projectId}/7`);
     }
+
+    router.push(`/project/${projectId}/7`);
   };
 
   return (
-    <Wrapper>
-      <Spin tip="Uploading documents" spinning={uploading}>
-        <Typography.Title>Upload Documents</Typography.Title>
-        <List
-          dataSource={documents}
-          renderItem={(docLink) => (
-            <List.Item>
-              <Link target="_blank" href={docLink}>
-                <Typography.Text style={{ width: "350px" }} ellipsis>
-                  {docLink}
-                </Typography.Text>
-              </Link>
-            </List.Item>
-          )}
-        />{" "}
-        <br />
-        <form onSubmit={uploadDocuments}>
-          <input
-            type="file"
-            name="documents"
-            id="documents"
-            onChange={handleChange}
-            multiple
-          />
-          <br />
-          <br />
-          <Button type="primary">Generate Recommendations</Button>
-          <ProjectFlowFooter previous={5} submitForm={uploadDocuments} />
-        </form>
-      </Spin>
-    </Wrapper>
+    <Row>
+      <Col span={4}>
+        <Navbar />
+      </Col>
+      <Col span={20}>
+        <Wrapper>
+          <Spin tip="Uploading documents" spinning={uploading}>
+            <Typography.Title>Upload Documents</Typography.Title>
+            <List
+              dataSource={documents}
+              renderItem={(docLink, index) => (
+                <List.Item>
+                  <Link target="_blank" href={docLink}>
+                    <Space>
+                      <FileOutlined />
+                      <Typography.Text>File {index + 1}</Typography.Text>
+                    </Space>
+                  </Link>
+                </List.Item>
+              )}
+            />{" "}
+            <br />
+            <form onSubmit={uploadDocuments}>
+              <input
+                type="file"
+                name="documents"
+                id="documents"
+                onChange={handleChange}
+                multiple
+              />
+              <br />
+              <br />
+              <Button type="primary">Generate Recommendations</Button>
+              <ProjectFlowFooter previous={5} submitForm={uploadDocuments} />
+            </form>
+          </Spin>
+        </Wrapper>
+      </Col>
+    </Row>
   );
 };
 

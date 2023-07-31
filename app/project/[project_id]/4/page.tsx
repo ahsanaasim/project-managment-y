@@ -1,6 +1,16 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Input, Space, Spin, Table, Tag, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Input,
+  Row,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import { nanoid } from "nanoid";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import AddRowButton from "../AddRowButton";
@@ -12,6 +22,7 @@ import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
+import Navbar from "@/app/components/Navbar";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
@@ -44,6 +55,9 @@ const Page = () => {
     setData([
       ...data.map((row) => {
         if (row.key == rowKey) {
+          if (row[column].includes(e.dataTransfer.getData("text/plain")))
+            return { ...row };
+
           return {
             ...row,
             [column]: [
@@ -51,39 +65,6 @@ const Page = () => {
               e.dataTransfer.getData("text/plain"),
             ],
           };
-          // if (column == "responsible") {
-          //   return {
-          //     ...row,
-          //     responsible: [
-          //       ...row.project_raci_responsible_stakeholder_ids,
-          //       e.dataTransfer.getData("text/plain"),
-          //     ],
-          //   };
-          // } else if (column == "accountable") {
-          //   return {
-          //     ...row,
-          //     accountable: [
-          //       ...row.project_raci_accountable_stakeholder_ids,
-          //       e.dataTransfer.getData("text/plain"),
-          //     ],
-          //   };
-          // } else if (column == "consulted") {
-          //   return {
-          //     ...row,
-          //     consulted: [
-          //       ...row.project_raci_consulted_stakeholder_ids,
-          //       e.dataTransfer.getData("text/plain"),
-          //     ],
-          //   };
-          // } else if (column == "informed") {
-          //   return {
-          //     ...row,
-          //     informed: [
-          //       ...row.project_raci_informed_stakeholder_ids,
-          //       e.dataTransfer.getData("text/plain"),
-          //     ],
-          //   };
-          // } else return { ...row };
         } else return { ...row };
       }),
     ]);
@@ -214,120 +195,129 @@ const Page = () => {
   }, [project]);
 
   return (
-    <Wrapper>
-      <Spin tip="Saving RACI items" spinning={updatingProject}>
-        <Typography.Title>RACI</Typography.Title>
-        <Typography.Text>Stakeholders</Typography.Text>
-        <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
-          <Space size={[0, 8]} wrap>
-            {project.project_stakeholders.map((stakeholder, index) => {
-              return (
-                <li
-                  key={index}
-                  style={{
-                    listStylePosition: "inside",
-                    display: "inline-block",
-                    cursor: "grabbing",
-                  }}
-                  draggable
-                  onDragStart={(e) =>
-                    onDragHandler(
-                      e,
-                      // stakeholder.project_stakeholder_name,
-                      stakeholder.project_stakeholder_id
+    <Row>
+      <Col span={4}>
+        <Navbar />
+      </Col>
+      <Col span={20}>
+        <Wrapper>
+          <Spin tip="Saving RACI items" spinning={updatingProject}>
+            <Typography.Title>RACI</Typography.Title>
+            <Typography.Text>Stakeholders</Typography.Text>
+            <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
+              <Space size={[0, 8]} wrap>
+                {project.project_stakeholders.map((stakeholder, index) => {
+                  return (
+                    <li
+                      key={index}
+                      style={{
+                        listStylePosition: "inside",
+                        display: "inline-block",
+                        cursor: "grabbing",
+                      }}
+                      draggable
+                      onDragStart={(e) =>
+                        onDragHandler(
+                          e,
+                          // stakeholder.project_stakeholder_name,
+                          stakeholder.project_stakeholder_id
+                        )
+                      }
+                    >
+                      <Tag color="blue">
+                        {stakeholder.project_stakeholder_name}
+                      </Tag>
+                    </li>
+                  );
+                })}
+              </Space>
+            </ul>
+            <form>
+              <Table
+                dataSource={data}
+                style={{ marginTop: "2rem" }}
+                pagination={false}
+              >
+                <Table.Column
+                  title="Deliverable"
+                  dataIndex="project_raci_deliverable"
+                  key="project_raci_deliverable"
+                  render={(rowData, record: { key: string }, index) => (
+                    <Input
+                      value={rowData}
+                      onChange={(e) =>
+                        changeDeliverable(record.key, e.target.value)
+                      }
+                    />
+                  )}
+                />
+                <Table.Column
+                  title="Responsible"
+                  dataIndex="project_raci_responsible_stakeholder_ids"
+                  key="project_raci_responsible_stakeholder_ids"
+                  render={(rowData, record: { key: string }, index) =>
+                    renderStakeholders(
+                      rowData,
+                      record.key,
+                      "project_raci_responsible_stakeholder_ids"
                     )
                   }
-                >
-                  <Tag color="blue">{stakeholder.project_stakeholder_name}</Tag>
-                </li>
-              );
-            })}
-          </Space>
-        </ul>
-        <form>
-          <Table
-            dataSource={data}
-            style={{ marginTop: "2rem" }}
-            pagination={false}
-          >
-            <Table.Column
-              title="Deliverable"
-              dataIndex="project_raci_deliverable"
-              key="project_raci_deliverable"
-              render={(rowData, record: { key: string }, index) => (
-                <Input
-                  value={rowData}
-                  onChange={(e) =>
-                    changeDeliverable(record.key, e.target.value)
+                />
+                <Table.Column
+                  title="Accountable"
+                  dataIndex="project_raci_accountable_stakeholder_ids"
+                  key="project_raci_accountable_stakeholder_ids"
+                  render={(rowData, record: { key: string }, index) =>
+                    renderStakeholders(
+                      rowData,
+                      record.key,
+                      "project_raci_accountable_stakeholder_ids"
+                    )
                   }
                 />
-              )}
-            />
-            <Table.Column
-              title="Responsible"
-              dataIndex="project_raci_responsible_stakeholder_ids"
-              key="project_raci_responsible_stakeholder_ids"
-              render={(rowData, record: { key: string }, index) =>
-                renderStakeholders(
-                  rowData,
-                  record.key,
-                  "project_raci_responsible_stakeholder_ids"
-                )
-              }
-            />
-            <Table.Column
-              title="Accountable"
-              dataIndex="project_raci_accountable_stakeholder_ids"
-              key="project_raci_accountable_stakeholder_ids"
-              render={(rowData, record: { key: string }, index) =>
-                renderStakeholders(
-                  rowData,
-                  record.key,
-                  "project_raci_accountable_stakeholder_ids"
-                )
-              }
-            />
-            <Table.Column
-              title="Consulted"
-              dataIndex="project_raci_consulted_stakeholder_ids"
-              key="project_raci_consulted_stakeholder_ids"
-              render={(rowData, record: { key: string }, index) =>
-                renderStakeholders(
-                  rowData,
-                  record.key,
-                  "project_raci_consulted_stakeholder_ids"
-                )
-              }
-            />
-            <Table.Column
-              title="Informed"
-              dataIndex="project_raci_informed_stakeholder_ids"
-              key="project_raci_informed_stakeholder_ids"
-              render={(rowData, record: { key: string }, index) =>
-                renderStakeholders(
-                  rowData,
-                  record.key,
-                  "project_raci_informed_stakeholder_ids"
-                )
-              }
-            />
-            <Table.Column
-              render={(rowData, record: { key: string }, index) => (
-                <Button
-                  onClick={() => deleteRow(record.key)}
-                  icon={<MinusCircleOutlined />}
-                  danger
-                ></Button>
-              )}
-            />
-          </Table>
-          <br />
-          <br />
-          <AddRowButton addRow={addRow} />
-          <ProjectFlowFooter previous={3} submitForm={saveRaci} />
-        </form>
-      </Spin>
-    </Wrapper>
+                <Table.Column
+                  title="Consulted"
+                  dataIndex="project_raci_consulted_stakeholder_ids"
+                  key="project_raci_consulted_stakeholder_ids"
+                  render={(rowData, record: { key: string }, index) =>
+                    renderStakeholders(
+                      rowData,
+                      record.key,
+                      "project_raci_consulted_stakeholder_ids"
+                    )
+                  }
+                />
+                <Table.Column
+                  title="Informed"
+                  dataIndex="project_raci_informed_stakeholder_ids"
+                  key="project_raci_informed_stakeholder_ids"
+                  render={(rowData, record: { key: string }, index) =>
+                    renderStakeholders(
+                      rowData,
+                      record.key,
+                      "project_raci_informed_stakeholder_ids"
+                    )
+                  }
+                />
+                <Table.Column
+                  render={(rowData, record: { key: string }, index) => (
+                    <Button
+                      onClick={() => deleteRow(record.key)}
+                      icon={<MinusCircleOutlined />}
+                      danger
+                    ></Button>
+                  )}
+                />
+              </Table>
+              <br />
+              <br />
+              <AddRowButton addRow={addRow} />
+              <ProjectFlowFooter previous={3} submitForm={saveRaci} />
+            </form>
+          </Spin>
+        </Wrapper>
+      </Col>
+    </Row>
   );
 };
 

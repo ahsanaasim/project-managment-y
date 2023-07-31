@@ -1,11 +1,12 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Input, Space, Spin, Typography } from "antd";
+import { Button, Col, Input, Row, Space, Spin, Typography } from "antd";
 import { getDoc, updateDoc } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import useProjectRef from "@/app/hooks/useProjectRef";
 import { useProjectContext } from "@/app/context/ProjectProvider";
+import Navbar from "@/app/components/Navbar";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -55,70 +56,77 @@ const Page = () => {
   }, [project]);
 
   return (
-    <main>
-      <Wrapper>
-        <Spin spinning={updatingProject} tip="Saving details">
-          <Typography.Title>{project.project_name}</Typography.Title>
-          <form onSubmit={createProjectDetails}>
-            <Space
-              direction="vertical"
-              size="large"
-              style={{ display: "flex", width: "50%" }}
-            >
-              <Space direction="vertical" style={{ display: "flex" }}>
-                <label htmlFor="overview">Overview</label>
-                <Input.TextArea
-                  name="overview"
-                  id="overview"
-                  value={overview}
-                  onChange={(e) => setOverview(e.target.value)}
-                />
-              </Space>
-              <Space direction="vertical" style={{ display: "flex" }}>
-                <label htmlFor="problem">Problem</label>
-                <Input.TextArea
-                  name="problem"
-                  id="problem"
-                  value={problem}
-                  onChange={(e) => setProblem(e.target.value)}
-                />
-              </Space>
-              <Space direction="vertical" style={{ display: "flex" }}>
-                <label htmlFor="purpose">Purpose</label>
-                <Input.TextArea
-                  name="purpose"
-                  id="purpose"
-                  value={purpose}
-                  onChange={(e) => setPurpose(e.target.value)}
-                />
-              </Space>
-              <Space direction="vertical" style={{ display: "flex" }}>
-                <label htmlFor="scope">Scope</label>
-                <Input.TextArea
-                  name="scope"
-                  id="scope"
-                  value={scope}
-                  onChange={(e) => setScope(e.target.value)}
-                />
-              </Space>
-              <Space direction="vertical" style={{ display: "flex" }}>
-                <label htmlFor="project-link">Link to Project Plan</label>
-                <Input
-                  type="url"
-                  name="project-link"
-                  id="project-link"
-                  value={projectLink}
-                  onChange={(e) => setProjectLink(e.target.value)}
-                />
-              </Space>
-              <Button htmlType="submit" type="primary" block>
-                Next
-              </Button>
-            </Space>
-          </form>
-        </Spin>
-      </Wrapper>
-    </main>
+    <Row>
+      <Col span={4}>
+        <Navbar />
+      </Col>
+      <Col span={20}>
+        <main>
+          <Wrapper>
+            <Spin spinning={updatingProject} tip="Saving details">
+              <Typography.Title>{project.project_name}</Typography.Title>
+              <form onSubmit={createProjectDetails}>
+                <Space
+                  direction="vertical"
+                  size="large"
+                  style={{ display: "flex", width: "50%" }}
+                >
+                  <Space direction="vertical" style={{ display: "flex" }}>
+                    <label htmlFor="overview">Overview</label>
+                    <Input.TextArea
+                      name="overview"
+                      id="overview"
+                      value={overview}
+                      onChange={(e) => setOverview(e.target.value)}
+                    />
+                  </Space>
+                  <Space direction="vertical" style={{ display: "flex" }}>
+                    <label htmlFor="problem">Problem</label>
+                    <Input.TextArea
+                      name="problem"
+                      id="problem"
+                      value={problem}
+                      onChange={(e) => setProblem(e.target.value)}
+                    />
+                  </Space>
+                  <Space direction="vertical" style={{ display: "flex" }}>
+                    <label htmlFor="purpose">Purpose</label>
+                    <Input.TextArea
+                      name="purpose"
+                      id="purpose"
+                      value={purpose}
+                      onChange={(e) => setPurpose(e.target.value)}
+                    />
+                  </Space>
+                  <Space direction="vertical" style={{ display: "flex" }}>
+                    <label htmlFor="scope">Scope</label>
+                    <Input.TextArea
+                      name="scope"
+                      id="scope"
+                      value={scope}
+                      onChange={(e) => setScope(e.target.value)}
+                    />
+                  </Space>
+                  <Space direction="vertical" style={{ display: "flex" }}>
+                    <label htmlFor="project-link">Link to Project Plan</label>
+                    <Input
+                      type="url"
+                      name="project-link"
+                      id="project-link"
+                      value={projectLink}
+                      onChange={(e) => setProjectLink(e.target.value)}
+                    />
+                  </Space>
+                  <Button htmlType="submit" type="primary" block>
+                    Next
+                  </Button>
+                </Space>
+              </form>
+            </Spin>
+          </Wrapper>
+        </main>
+      </Col>
+    </Row>
   );
 };
 

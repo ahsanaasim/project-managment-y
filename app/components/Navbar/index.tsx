@@ -1,6 +1,6 @@
 import { Menu, MenuProps } from "antd";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function getItem(
   label: React.ReactNode,
@@ -39,13 +39,17 @@ const Page = () => {
   const [current, setCurrent] = useState(getCurrentPageNavkey(path));
   const step = path.split("/").pop();
 
-  console.log(step);
-
   const navbarHandler: MenuProps["onClick"] = (e) => {
     const projectId = e.key == "1" ? "" : "/" + path.split("/")[2];
     router.push(`/project${projectId}/${e.key}`);
     setCurrent(e.key);
   };
+
+  // useEffect(() => {
+  //   console.log("changed");
+
+  //   setCurrent(path.split("/").pop());
+  // }, [router]);
 
   return (
     <Menu

@@ -4,7 +4,7 @@ import { Col, Row, Spin } from "antd";
 import Navbar from "../../components/Navbar";
 import NoSSR from "../../components/NoSSR";
 import TopMenu from "../../components/TopMenu";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase";
 import ProjectProvider from "@/app/context/ProjectProvider";
@@ -13,6 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<null | User>(null);
   const router = useRouter();
+  const path = usePathname();
 
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
@@ -22,7 +23,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
       setUser(currentUser);
     });
-  }, [router]);
+  }, [router, path]);
 
   return (
     <NoSSR>
@@ -41,14 +42,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         )}
         {!loading && user && (
-          <Row>
-            <Col span={4}>
-              <Navbar />
-            </Col>
-            <Col span={20}>
-              <ProjectProvider>{children}</ProjectProvider>
-            </Col>
-          </Row>
+          // <Row>
+          //   <Col span={4}>
+          //     <Navbar />
+          //   </Col>
+          //   <Col span={20}>
+          <ProjectProvider>{children}</ProjectProvider>
+          //   </Col>
+          // </Row>
         )}
       </main>
     </NoSSR>

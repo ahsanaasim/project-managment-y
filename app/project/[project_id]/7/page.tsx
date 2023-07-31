@@ -1,11 +1,12 @@
 "use client";
+import Navbar from "@/app/components/Navbar";
 import Wrapper from "@/app/components/Wrapper";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
 import useProjectId from "@/app/hooks/useProjectId";
 import useProjectRef from "@/app/hooks/useProjectRef";
 import { recommendationsStakeholder } from "@/global";
-import { Button, Input, Space, Spin, Table, Typography } from "antd";
+import { Button, Col, Input, Row, Space, Spin, Table, Typography } from "antd";
 import { updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { FormEventHandler, useEffect, useState } from "react";
@@ -60,84 +61,101 @@ const Page = () => {
   };
 
   return (
-    <Wrapper>
-      <Spin tip="Saving Recommendations" spinning={updatingProject}>
-        <Typography.Title>Recommendations</Typography.Title>
-        <form onSubmit={saveRecommendations}>
-          <Space direction="vertical" style={{ display: "flex" }}>
-            <label>General Recommendations</label>
-            <Input.TextArea
-              value={recommendationsGeneral}
-              onChange={(e) => setRecommendationsGeneral(e.target.value)}
-            ></Input.TextArea>
-          </Space>
-          <br />
-          <Typography.Text>Stakeholder Recommendations</Typography.Text>
-          <Table dataSource={tableData} pagination={false}>
-            <Table.Column
-              title="Stakeholder"
-              dataIndex="project_recommendations_stakeholder_id"
-              key="project_recommendations_stakeholder_id"
-              render={(stakeholderId) => {
-                return getStakeholderName(stakeholderId, project);
-              }}
-            />
-            <Table.Column
-              title="Competencies"
-              dataIndex="project_recommendations_competencies"
-              key="project_recommendations_competencies"
-              render={(rowData, record: { key: string }, index) => (
-                <Input
-                  value={rowData}
-                  onChange={(e) =>
-                    changeInput(
-                      record.key,
-                      "project_recommendations_competencies",
-                      e.target.value
-                    )
-                  }
+    <Row>
+      <Col span={4}>
+        <Navbar />
+      </Col>
+      <Col span={20}>
+        <Wrapper>
+          <Spin tip="Saving Recommendations" spinning={updatingProject}>
+            <Typography.Title>Recommendations</Typography.Title>
+            <form onSubmit={saveRecommendations}>
+              <Space direction="vertical" style={{ display: "flex" }}>
+                <label>General Recommendations</label>
+                <Input.TextArea
+                  value={recommendationsGeneral}
+                  onChange={(e) => setRecommendationsGeneral(e.target.value)}
+                ></Input.TextArea>
+              </Space>
+              <br />
+              <Typography.Text>Stakeholder Recommendations</Typography.Text>
+              <Table dataSource={tableData} pagination={false}>
+                <Table.Column
+                  title="Stakeholder"
+                  dataIndex="project_recommendations_stakeholder_id"
+                  key="project_recommendations_stakeholder_id"
+                  render={(stakeholderId) => {
+                    return getStakeholderName(stakeholderId, project);
+                  }}
                 />
-              )}
-            />
-            <Table.Column
-              title="Resources"
-              dataIndex="project_recommendations_resources"
-              key="project_recommendations_resources"
-              render={(rowData, record: { key: string }, index) => (
-                <Input
-                  value={rowData}
-                  onChange={(e) =>
-                    changeInput(
-                      record.key,
-                      "project_recommendations_resources",
-                      e.target.value
-                    )
-                  }
+                <Table.Column
+                  title="Competencies"
+                  dataIndex="project_recommendations_competencies"
+                  key="project_recommendations_competencies"
+                  render={(rowData, record: { key: string }, index) => (
+                    <Input
+                      value={rowData}
+                      onChange={(e) =>
+                        changeInput(
+                          record.key,
+                          "project_recommendations_competencies",
+                          e.target.value
+                        )
+                      }
+                    />
+                  )}
                 />
-              )}
-            />
-            <Table.Column render={() => <Button type="link">Send</Button>} />
-          </Table>
-          <Space
-            style={{
-              margin: "2rem 0",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <Button style={{ width: "200px" }} href="/project/6" type="primary">
-              Back
-            </Button>
-            <Button style={{ width: "200px" }} type="primary">
-              Edit
-            </Button>
-            <Button htmlType="submit" style={{ width: "200px" }} type="primary">
-              Next
-            </Button>
-          </Space>
-        </form>
-      </Spin>
-    </Wrapper>
+                <Table.Column
+                  title="Resources"
+                  dataIndex="project_recommendations_resources"
+                  key="project_recommendations_resources"
+                  render={(rowData, record: { key: string }, index) => (
+                    <Input
+                      value={rowData}
+                      onChange={(e) =>
+                        changeInput(
+                          record.key,
+                          "project_recommendations_resources",
+                          e.target.value
+                        )
+                      }
+                    />
+                  )}
+                />
+                <Table.Column
+                  render={() => <Button type="link">Send</Button>}
+                />
+              </Table>
+              <Space
+                style={{
+                  margin: "2rem 0",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  style={{ width: "200px" }}
+                  href="/project/6"
+                  type="primary"
+                >
+                  Back
+                </Button>
+                <Button style={{ width: "200px" }} type="primary">
+                  Edit
+                </Button>
+                <Button
+                  htmlType="submit"
+                  style={{ width: "200px" }}
+                  type="primary"
+                >
+                  Next
+                </Button>
+              </Space>
+            </form>
+          </Spin>
+        </Wrapper>
+      </Col>
+    </Row>
   );
 };
 
