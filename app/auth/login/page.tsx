@@ -2,21 +2,28 @@
 import React, { FormEventHandler, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Space, Typography, message } from "antd";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/app/firebase";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, db } from "@/app/firebase";
 import { FirebaseError } from "firebase/app";
 import { useRouter } from "next/navigation";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import useGoogleSignIn from "@/app/helpers/googleSignIn";
 
 const App: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const signInWithGoogle = useGoogleSignIn();
 
   const loginUser: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     try {
-      const user = await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
 
       setEmail("");
       setPassword("");
@@ -71,6 +78,7 @@ const App: React.FC = () => {
               </Button>
               <Typography style={{ textAlign: "center" }}>or</Typography>
               <Button
+                onClick={signInWithGoogle}
                 style={{
                   borderRadius: "50px",
                   margin: "0 auto",

@@ -2,16 +2,22 @@
 import React, { FormEventHandler, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Space, Typography, message } from "antd";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth, db } from "@/app/firebase";
 import { FirebaseError } from "firebase/app";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import useGoogleSignIn from "@/app/helpers/googleSignIn";
 
 const App: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const signInWithGoogle = useGoogleSignIn();
 
   const createUser: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -31,11 +37,6 @@ const App: React.FC = () => {
       await setDoc(userDocumentRef, {
         user_email_address: response.user.email,
       });
-
-      // projects sub collection
-      // const projectsCollectionRef = collection(userDocumentRef, "projects");
-      // const projectDocumentRef = doc(projectsCollectionRef);
-      // await setDoc(projectDocumentRef, {})
 
       router.push("/project/1");
     } catch (error) {
@@ -91,6 +92,7 @@ const App: React.FC = () => {
               </Button>
               <Typography style={{ textAlign: "center" }}>or</Typography>
               <Button
+                onClick={signInWithGoogle}
                 style={{
                   borderRadius: "50px",
                   margin: "0 auto",
