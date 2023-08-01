@@ -135,7 +135,7 @@ const Page = () => {
               >
                 <Button
                   style={{ width: "200px" }}
-                  href="/project/6"
+                  href={`/project/${projectId}/6`}
                   type="primary"
                 >
                   Back
