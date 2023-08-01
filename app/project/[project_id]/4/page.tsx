@@ -200,7 +200,14 @@ const Page = () => {
                 <Typography.Text>Stakeholders</Typography.Text>
               </div>
             )}
-            <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
+            <ul
+              style={{
+                listStyle: "none",
+                // position: "fixed",
+                // top: 0,
+                paddingInlineStart: 0,
+              }}
+            >
               <Space size={[0, 8]} wrap>
                 {project.project_stakeholders.map((stakeholder, index) => {
                   return (
@@ -213,11 +220,7 @@ const Page = () => {
                       }}
                       draggable
                       onDragStart={(e) =>
-                        onDragHandler(
-                          e,
-                          // stakeholder.project_stakeholder_name,
-                          stakeholder.project_stakeholder_id
-                        )
+                        onDragHandler(e, stakeholder.project_stakeholder_id)
                       }
                     >
                       <Tag color="blue">
@@ -231,7 +234,11 @@ const Page = () => {
             <form>
               <Table
                 dataSource={data}
-                style={{ marginTop: "2rem" }}
+                style={{
+                  marginTop: "2rem",
+                  maxHeight: "500px",
+                  overflowY: "scroll",
+                }}
                 pagination={false}
               >
                 <Table.Column

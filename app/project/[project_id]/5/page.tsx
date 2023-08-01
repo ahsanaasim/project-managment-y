@@ -18,6 +18,7 @@ import React, { FormEventHandler, useEffect, useState } from "react";
 import {
   CloseOutlined,
   DeleteOutlined,
+  EditFilled,
   MinusCircleOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
@@ -42,6 +43,8 @@ const Page = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
   const [updatingProject, setUpdatingProject] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingGroup, setEditingGroup] = useState("");
   const getProjectRef = useProjectRef();
   const projectId = useProjectId();
   const router = useRouter();
@@ -285,6 +288,26 @@ const Page = () => {
     ]);
   };
 
+  const editGroup = (tableId: string, newName: string) => {
+    setTableData([
+      ...tableData.map((table) => {
+        if (table.project_working_group_id == tableId) {
+          return { ...table, project_working_group_title: newName };
+        } else return { ...table };
+      }),
+    ]);
+
+    setEditingGroup("");
+    setShowEditModal(false);
+    setNewGroupName("");
+  };
+
+  const openEditModal = (tableId: string, oldName: string) => {
+    setEditingGroup(tableId);
+    setNewGroupName(oldName);
+    setShowEditModal(true);
+  };
+
   return (
     <Row>
       <Col span={4}>
@@ -298,6 +321,18 @@ const Page = () => {
                 title="Create Working Group"
                 open={isModalOpen}
                 onOk={handleOk}
+                onCancel={handleCancel}
+              >
+                <Input
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="Working group name"
+                />
+              </Modal>
+              <Modal
+                title="Edit Working Group Title"
+                open={showEditModal}
+                onOk={() => editGroup(editingGroup, newGroupName)}
                 onCancel={handleCancel}
               >
                 <Input
@@ -343,100 +378,138 @@ const Page = () => {
                 </Space>
               </ul>
               <form onSubmit={saveWorkingGroups}>
-                {tableData.map((table, index) => {
-                  return (
-                    <div key={index} style={{ marginTop: "1rem" }}>
-                      <Typography.Text>
-                        <Space>
-                          {table.project_working_group_title}{" "}
-                          <Button
-                            danger
-                            icon={<DeleteOutlined />}
-                            onClick={() =>
-                              removeGroup(table.project_working_group_id)
-                            }
-                          ></Button>
-                        </Space>
-                      </Typography.Text>
-                      <Table
-                        dataSource={table.project_working_group_item}
-                        style={{ marginTop: "2rem" }}
-                        pagination={false}
+                <div
+                  style={{
+                    maxHeight: "500px",
+                    overflowY: "scroll",
+                  }}
+                >
+                  {tableData.map((table, index) => {
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          marginTop: "1rem",
+                        }}
                       >
-                        <Table.Column
-                          title="Role"
-                          dataIndex="project_working_group_role"
-                          key="project_working_group_role"
-                          render={(rowData, record: { key: string }, index) => (
-                            <Input
-                              value={rowData}
-                              onChange={(e) =>
-                                changeRoleResponsibility(
-                                  table.project_working_group_id,
-                                  record.key,
-                                  "project_working_group_role",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Responsibilities"
-                          dataIndex="project_working_group_responsibilities"
-                          key="project_working_group_responsibilities"
-                          render={(rowData, record: { key: string }, index) => (
-                            <Input
-                              value={rowData}
-                              onChange={(e) =>
-                                changeRoleResponsibility(
-                                  table.project_working_group_id,
-                                  record.key,
-                                  "project_working_group_responsibilities",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Stakeholders"
-                          dataIndex="project_working_group_stakeholders"
-                          key="project_working_group_stakeholders"
-                          render={(rowData, record: { key: string }, index) =>
-                            renderStakeholders(
-                              rowData,
-                              record.key,
-                              table.project_working_group_id
-                            )
-                          }
-                        />
-                        <Table.Column
-                          render={(rowData, record: { key: string }, index) => (
+                        <Typography.Text strong>
+                          <Space>
+                            {table.project_working_group_title}
                             <Button
+                              size="small"
+                              type="default"
                               onClick={() =>
-                                deleteRow(
+                                openEditModal(
                                   table.project_working_group_id,
-                                  record.key
+                                  table.project_working_group_title
                                 )
                               }
-                              icon={<MinusCircleOutlined />}
-                              danger
-                            ></Button>
-                          )}
-                        />
-                      </Table>
-                      <br />
-                      <Button
-                        onClick={() => addRow(table.project_working_group_id)}
-                        icon={<PlusCircleOutlined />}
-                      >
-                        Add Row
-                      </Button>
-                      <Divider />
-                    </div>
-                  );
-                })}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="small"
+                              type="default"
+                              onClick={() =>
+                                removeGroup(table.project_working_group_id)
+                              }
+                            >
+                              Delete
+                            </Button>
+                          </Space>
+                        </Typography.Text>
+                        <Table
+                          dataSource={table.project_working_group_item}
+                          style={{ marginTop: "2rem" }}
+                          pagination={false}
+                        >
+                          <Table.Column
+                            title="Role"
+                            dataIndex="project_working_group_role"
+                            key="project_working_group_role"
+                            render={(
+                              rowData,
+                              record: { key: string },
+                              index
+                            ) => (
+                              <Input
+                                value={rowData}
+                                onChange={(e) =>
+                                  changeRoleResponsibility(
+                                    table.project_working_group_id,
+                                    record.key,
+                                    "project_working_group_role",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            )}
+                          />
+                          <Table.Column
+                            title="Responsibilities"
+                            dataIndex="project_working_group_responsibilities"
+                            key="project_working_group_responsibilities"
+                            render={(
+                              rowData,
+                              record: { key: string },
+                              index
+                            ) => (
+                              <Input
+                                value={rowData}
+                                onChange={(e) =>
+                                  changeRoleResponsibility(
+                                    table.project_working_group_id,
+                                    record.key,
+                                    "project_working_group_responsibilities",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            )}
+                          />
+                          <Table.Column
+                            title="Stakeholders"
+                            dataIndex="project_working_group_stakeholders"
+                            key="project_working_group_stakeholders"
+                            render={(rowData, record: { key: string }, index) =>
+                              renderStakeholders(
+                                rowData,
+                                record.key,
+                                table.project_working_group_id
+                              )
+                            }
+                          />
+                          <Table.Column
+                            render={(
+                              rowData,
+                              record: { key: string },
+                              index
+                            ) => (
+                              <Button
+                                onClick={() =>
+                                  deleteRow(
+                                    table.project_working_group_id,
+                                    record.key
+                                  )
+                                }
+                                icon={<MinusCircleOutlined />}
+                                danger
+                              ></Button>
+                            )}
+                          />
+                        </Table>
+                        <br />
+                        <Button
+                          onClick={() => addRow(table.project_working_group_id)}
+                          icon={<PlusCircleOutlined />}
+                        >
+                          Add Row
+                        </Button>
+                        <Divider />
+                      </div>
+                    );
+                  })}
+                </div>
                 <br />
                 <Button
                   type="primary"
