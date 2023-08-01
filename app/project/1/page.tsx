@@ -66,12 +66,12 @@ const Page = () => {
             },
           ],
           project_stakeholders: [
-            {
-              project_stakeholder_email: "",
-              project_stakeholder_id: nanoid(),
-              project_stakeholder_name: "",
-              project_stakeholder_role: "",
-            },
+            // {
+            //   project_stakeholder_email: "",
+            //   project_stakeholder_id: nanoid(),
+            //   project_stakeholder_name: "",
+            //   project_stakeholder_role: "",
+            // },
           ],
           project_raci_items: [
             {

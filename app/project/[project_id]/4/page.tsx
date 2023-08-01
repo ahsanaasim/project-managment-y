@@ -24,27 +24,12 @@ import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 
-// const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
-
-// type DataType = {
-//   [key: string]: string | string[];
-//   key: string;
-//   deliverable: string;
-//   responsible: string[];
-//   accountable: string[];
-//   consulted: string[];
-//   informed: string[];
-// };
-
 const Page = () => {
   const { project, setProject } = useProjectContext();
   const [updatingProject, setUpdatingProject] = useState(false);
   const getProjectRef = useProjectRef();
   const projectId = useProjectId();
   const router = useRouter();
-  // const [raciItems, setRaciItems] = useState<RaciItem[]>(
-  //   project.project_raci_items
-  // );
   const [data, setData] = useState<RaciItem[]>(project.project_raci_items);
 
   const handleOnDrop = (
@@ -194,6 +179,8 @@ const Page = () => {
     setData([...project.project_raci_items]);
   }, [project]);
 
+  console.log(project.project_stakeholders);
+
   return (
     <Row>
       <Col span={4}>
@@ -203,7 +190,16 @@ const Page = () => {
         <Wrapper>
           <Spin tip="Saving RACI items" spinning={updatingProject}>
             <Typography.Title>RACI</Typography.Title>
-            <Typography.Text>Stakeholders</Typography.Text>
+            {/* <Typography.Text>Stakeholders</Typography.Text> */}
+            {project.project_stakeholders.length == 0 ? (
+              <div>
+                <Typography.Text type="danger">No Stakeholders</Typography.Text>
+              </div>
+            ) : (
+              <div>
+                <Typography.Text>Stakeholders</Typography.Text>
+              </div>
+            )}
             <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
               <Space size={[0, 8]} wrap>
                 {project.project_stakeholders.map((stakeholder, index) => {

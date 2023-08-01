@@ -298,7 +298,17 @@ const Page = () => {
                 </form>
               </Modal>
               <Typography.Title>Working Groups</Typography.Title>
-              <Typography.Text>Stakeholders</Typography.Text>
+              {project.project_stakeholders.length == 0 ? (
+                <div>
+                  <Typography.Text type="danger">
+                    No Stakeholders
+                  </Typography.Text>
+                </div>
+              ) : (
+                <div>
+                  <Typography.Text>Stakeholders</Typography.Text>
+                </div>
+              )}
               <ul style={{ listStyle: "none", paddingInlineStart: 0 }}>
                 <Space size={[0, 8]} wrap>
                   {project.project_stakeholders.map((stakeholder, index) => {

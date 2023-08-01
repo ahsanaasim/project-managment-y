@@ -26,32 +26,6 @@ const Page = () => {
   const getProjectRef = useProjectRef();
   const projectId = useProjectId();
   const router = useRouter();
-  // const [outcomes, setOutcomes] = useState([
-  //     {
-  //         "outcome" : "",
-  //         "metric" : "",
-  //         "id" : nanoid()
-  //     },
-  //     {
-  //         "outcome" : "",
-  //         "metric" : "",
-  //         "id" : nanoid()
-  //     },
-  // ])
-  // const [stakeHolders, setStakeHolders] = useState([
-  //     {
-  //         id: nanoid(),
-  //         name: "",
-  //         roles: "",
-  //         email: ""
-  //     },
-  //     {
-  //         id: nanoid(),
-  //         name: "",
-  //         roles: "",
-  //         email: ""
-  //     }
-  // ])
 
   const removeField = (id: string) => {
     setOutcomes([...outcomes.filter((outcome) => outcome.item_id != id)]);
@@ -306,7 +280,7 @@ const Page = () => {
                   onClick={addStakeholderField}
                   icon={<PlusCircleOutlined />}
                 >
-                  Add Field
+                  Add Stakeholder
                 </Button>
               </Space>
               <ProjectFlowFooter previous={2} submitForm={saveStakeholders} />
