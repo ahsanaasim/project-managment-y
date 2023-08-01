@@ -2,15 +2,10 @@
 import React, { FormEventHandler, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Space, Typography, message } from "antd";
-import {
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/app/firebase";
 import { FirebaseError } from "firebase/app";
 import { useRouter } from "next/navigation";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import useGoogleSignIn from "@/app/helpers/googleSignIn";
 
 const App: React.FC = () => {
