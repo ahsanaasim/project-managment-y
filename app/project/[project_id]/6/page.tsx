@@ -10,7 +10,12 @@ import React, {
 import ProjectFlowFooter from "../ProjectFlowFooter";
 import useUserId from "@/app/hooks/useUserId";
 import { nanoid } from "nanoid";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { storage } from "@/app/firebase";
 import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
@@ -19,13 +24,15 @@ import { updateDoc } from "firebase/firestore";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
-import { FileOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FileOutlined } from "@ant-design/icons";
+import FirebaseStorage from "firebase/storage";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
   const [fileList, setFileList] = useState<FileList | null>();
   const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState(project.project_documents);
+  const [deleting, setDeleting] = useState(false);
   const getUserId = useUserId();
   const getProjectRef = useProjectRef();
   const projectId = useProjectId();
@@ -76,6 +83,30 @@ const Page = () => {
     router.push(`/project/${projectId}/7`);
   };
 
+  const deleteFile = async (fileLink: string) => {
+    setDeleting(true);
+    // deleting from db
+    const projectRef = await getProjectRef(projectId);
+    const newList = project.project_documents.filter(
+      (link) => link != fileLink
+    );
+    await updateDoc(projectRef, {
+      project_documents: [...newList],
+    });
+
+    // deleting from storage
+    const fileRef = ref(storage, fileLink);
+    await deleteObject(fileRef);
+
+    setProject({
+      ...project,
+      project_documents: [...newList],
+    });
+
+    setDeleting(false);
+    message.success("File deleted");
+  };
+
   return (
     <Row>
       <Col span={4}>
@@ -84,34 +115,42 @@ const Page = () => {
       <Col span={20}>
         <Wrapper>
           <Spin tip="Uploading documents" spinning={uploading}>
-            <Typography.Title>Upload Documents</Typography.Title>
-            <List
-              dataSource={documents}
-              renderItem={(docLink, index) => (
-                <List.Item>
-                  <Link target="_blank" href={docLink}>
-                    <Space>
-                      <FileOutlined />
-                      <Typography.Text>File {index + 1}</Typography.Text>
-                    </Space>
-                  </Link>
-                </List.Item>
-              )}
-            />{" "}
-            <br />
-            <form onSubmit={uploadDocuments}>
-              <input
-                type="file"
-                name="documents"
-                id="documents"
-                onChange={handleChange}
-                multiple
-              />
+            <Spin tip="Deleting file" spinning={deleting}>
+              <Typography.Title>Upload Documents</Typography.Title>
+              <List
+                dataSource={documents}
+                renderItem={(docLink, index) => (
+                  <List.Item>
+                    <Link target="_blank" href={docLink}>
+                      <Space>
+                        <FileOutlined />
+                        <Typography.Text>File {index + 1}</Typography.Text>
+                      </Space>
+                    </Link>
+                    <Button
+                      onClick={() => deleteFile(docLink)}
+                      icon={<DeleteOutlined />}
+                      type="link"
+                      danger
+                    ></Button>
+                  </List.Item>
+                )}
+              />{" "}
               <br />
-              <br />
-              <Button type="primary">Generate Recommendations</Button>
-              <ProjectFlowFooter previous={5} submitForm={uploadDocuments} />
-            </form>
+              <form onSubmit={uploadDocuments}>
+                <input
+                  type="file"
+                  name="documents"
+                  id="documents"
+                  onChange={handleChange}
+                  multiple
+                />
+                <br />
+                <br />
+                <Button type="primary">Generate Recommendations</Button>
+                <ProjectFlowFooter previous={5} submitForm={uploadDocuments} />
+              </form>
+            </Spin>
           </Spin>
         </Wrapper>
       </Col>
