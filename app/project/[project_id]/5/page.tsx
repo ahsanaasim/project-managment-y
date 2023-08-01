@@ -17,6 +17,7 @@ import { nanoid } from "nanoid";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import {
   CloseOutlined,
+  DeleteOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
@@ -53,7 +54,9 @@ const Page = () => {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
+  const handleOk = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+
     setTableData([
       ...tableData,
       {
@@ -69,6 +72,8 @@ const Page = () => {
         ],
       },
     ]);
+
+    setNewGroupName("");
     setIsModalOpen(false);
   };
 
@@ -274,6 +279,12 @@ const Page = () => {
     ]);
   };
 
+  const removeGroup = (tableId: string) => {
+    setTableData([
+      ...tableData.filter((table) => table.project_working_group_id != tableId),
+    ]);
+  };
+
   return (
     <Row>
       <Col span={4}>
@@ -289,13 +300,11 @@ const Page = () => {
                 onOk={handleOk}
                 onCancel={handleCancel}
               >
-                <form>
-                  <Input
-                    value={newGroupName}
-                    onChange={(e) => setNewGroupName(e.target.value)}
-                    placeholder="Working group name"
-                  />
-                </form>
+                <Input
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="Working group name"
+                />
               </Modal>
               <Typography.Title>Working Groups</Typography.Title>
               {project.project_stakeholders.length == 0 ? (
@@ -338,7 +347,16 @@ const Page = () => {
                   return (
                     <div key={index} style={{ marginTop: "1rem" }}>
                       <Typography.Text>
-                        {table.project_working_group_title}
+                        <Space>
+                          {table.project_working_group_title}{" "}
+                          <Button
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={() =>
+                              removeGroup(table.project_working_group_id)
+                            }
+                          ></Button>
+                        </Space>
                       </Typography.Text>
                       <Table
                         dataSource={table.project_working_group_item}
