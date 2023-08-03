@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import useProjectId from "@/app/hooks/useProjectId";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
+import ScrollInput from "@/app/components/ScrollInput";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -118,6 +119,7 @@ const Page = () => {
       project_budget: budget,
       project_outcomes_and_metrics: outcomes,
       project_stakeholders: stakeHolders,
+      project_recommendations_stakeholder,
     });
 
     router.push(`/project/${projectId}/4`);
@@ -160,7 +162,7 @@ const Page = () => {
                 {outcomes.map((outcome, index) => (
                   <Row key={index} gutter={20}>
                     <Col span={12}>
-                      <Input
+                      {/* <Input
                         value={outcome.project_outcome}
                         onChange={(e) =>
                           changeOutcomeMetric(
@@ -171,11 +173,23 @@ const Page = () => {
                         }
                         name="outcome"
                         id="outcome"
+                      /> */}
+
+                      <ScrollInput
+                        value={outcome.project_outcome}
+                        onChange={(e) =>
+                          changeOutcomeMetric(
+                            outcome.item_id,
+                            e.target.value,
+                            "project_outcome"
+                          )
+                        }
+                        name="outcome"
                       />
                     </Col>
                     <Col span={12}>
                       <div style={{ display: "flex", gap: 20 }}>
-                        <Input
+                        {/* <Input
                           value={outcome.project_metric}
                           onChange={(e) =>
                             changeOutcomeMetric(
@@ -187,6 +201,19 @@ const Page = () => {
                           style={{ width: "100%" }}
                           name="metric"
                           id="metric"
+                        /> */}
+
+                        <ScrollInput
+                          value={outcome.project_metric}
+                          onChange={(e) =>
+                            changeOutcomeMetric(
+                              outcome.item_id,
+                              e.target.value,
+                              "project_metric"
+                            )
+                          }
+                          // style={{ width: "100%" }}
+                          name="metric"
                         />
                         <Button
                           onClick={() => removeField(outcome.item_id)}

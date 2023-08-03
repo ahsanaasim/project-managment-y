@@ -32,6 +32,7 @@ import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
+import ScrollInput from "@/app/components/ScrollInput";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
@@ -454,7 +455,20 @@ const Page = () => {
                               record: { key: string },
                               index
                             ) => (
-                              <Input
+                              // <Input
+                              //   value={rowData}
+                              //   onChange={(e) =>
+                              //     changeRoleResponsibility(
+                              //       table.project_working_group_id,
+                              //       record.key,
+                              //       "project_working_group_responsibilities",
+                              //       e.target.value
+                              //     )
+                              //   }
+                              // />
+
+                              <ScrollInput
+                                name="responsibilities"
                                 value={rowData}
                                 onChange={(e) =>
                                   changeRoleResponsibility(

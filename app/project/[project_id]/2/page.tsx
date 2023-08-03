@@ -7,6 +7,7 @@ import React, { FormEventHandler, useEffect, useState } from "react";
 import useProjectRef from "@/app/hooks/useProjectRef";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import Navbar from "@/app/components/Navbar";
+import ScrollInput from "@/app/components/ScrollInput";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -73,36 +74,56 @@ const Page = () => {
                 >
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="overview">Overview</label>
-                    <Input.TextArea
+                    {/* <Input.TextArea
                       name="overview"
                       id="overview"
+                      value={overview}
+                      onChange={(e) => setOverview(e.target.value)}
+                    /> */}
+                    <ScrollInput
+                      name="overview"
                       value={overview}
                       onChange={(e) => setOverview(e.target.value)}
                     />
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="problem">Problem</label>
-                    <Input.TextArea
+                    {/* <Input.TextArea
                       name="problem"
                       id="problem"
+                      value={problem}
+                      onChange={(e) => setProblem(e.target.value)}
+                    /> */}
+                    <ScrollInput
+                      name="problem"
                       value={problem}
                       onChange={(e) => setProblem(e.target.value)}
                     />
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="purpose">Purpose</label>
-                    <Input.TextArea
+                    {/* <Input.TextArea
                       name="purpose"
                       id="purpose"
+                      value={purpose}
+                      onChange={(e) => setPurpose(e.target.value)}
+                    /> */}
+                    <ScrollInput
+                      name="purpose"
                       value={purpose}
                       onChange={(e) => setPurpose(e.target.value)}
                     />
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="scope">Scope</label>
-                    <Input.TextArea
+                    {/* <Input.TextArea
                       name="scope"
                       id="scope"
+                      value={scope}
+                      onChange={(e) => setScope(e.target.value)}
+                    /> */}
+                    <ScrollInput
+                      name="scope"
                       value={scope}
                       onChange={(e) => setScope(e.target.value)}
                     />

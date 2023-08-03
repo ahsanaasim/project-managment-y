@@ -1,5 +1,6 @@
 "use client";
 import Navbar from "@/app/components/Navbar";
+import ScrollInput from "@/app/components/ScrollInput";
 import Wrapper from "@/app/components/Wrapper";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
@@ -93,7 +94,19 @@ const Page = () => {
                   dataIndex="project_recommendations_competencies"
                   key="project_recommendations_competencies"
                   render={(rowData, record: { key: string }, index) => (
-                    <Input
+                    // <Input
+                    //   value={rowData}
+                    //   onChange={(e) =>
+                    //     changeInput(
+                    //       record.key,
+                    //       "project_recommendations_competencies",
+                    //       e.target.value
+                    //     )
+                    //   }
+                    // />
+
+                    <ScrollInput
+                      name="competencies"
                       value={rowData}
                       onChange={(e) =>
                         changeInput(
@@ -110,7 +123,19 @@ const Page = () => {
                   dataIndex="project_recommendations_resources"
                   key="project_recommendations_resources"
                   render={(rowData, record: { key: string }, index) => (
-                    <Input
+                    // <Input
+                    //   value={rowData}
+                    //   onChange={(e) =>
+                    //     changeInput(
+                    //       record.key,
+                    //       "project_recommendations_resources",
+                    //       e.target.value
+                    //     )
+                    //   }
+                    // />
+
+                    <ScrollInput
+                      name="resources"
                       value={rowData}
                       onChange={(e) =>
                         changeInput(

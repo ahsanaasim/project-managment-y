@@ -23,6 +23,7 @@ import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
+import ScrollInput from "@/app/components/ScrollInput";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -246,7 +247,14 @@ const Page = () => {
                   dataIndex="project_raci_deliverable"
                   key="project_raci_deliverable"
                   render={(rowData, record: { key: string }, index) => (
-                    <Input
+                    // <Input
+                    //   value={rowData}
+                    //   onChange={(e) =>
+                    //     changeDeliverable(record.key, e.target.value)
+                    //   }
+                    // />
+                    <ScrollInput
+                      name="deliverable"
                       value={rowData}
                       onChange={(e) =>
                         changeDeliverable(record.key, e.target.value)

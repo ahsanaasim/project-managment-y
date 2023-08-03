@@ -65,14 +65,7 @@ const Page = () => {
               item_id: nanoid(),
             },
           ],
-          project_stakeholders: [
-            // {
-            //   project_stakeholder_email: "",
-            //   project_stakeholder_id: nanoid(),
-            //   project_stakeholder_name: "",
-            //   project_stakeholder_role: "",
-            // },
-          ],
+          project_stakeholders: [],
           project_raci_items: [
             {
               raci_item_key: nanoid(),
@@ -83,20 +76,7 @@ const Page = () => {
               project_raci_informed_stakeholder_ids: [],
             },
           ],
-          project_working_groups: [
-            // {
-            //   project_working_group_id: nanoid(),
-            //   project_working_group_title: "",
-            //   project_working_group_item: [
-            //     {
-            //       key: nanoid(),
-            //       project_working_group_responsibilities: "",
-            //       project_working_group_role: "",
-            //       project_working_group_stakeholders: [],
-            //     },
-            //   ],
-            // },
-          ],
+          project_working_groups: [],
           project_documents: [],
           project_recommendations_general: "",
           project_recommendations_stakeholder: [],
@@ -141,6 +121,7 @@ const Page = () => {
           >
             <Space direction="vertical" style={{ display: "flex" }}>
               <label htmlFor="project-name">Project Name</label>
+
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
