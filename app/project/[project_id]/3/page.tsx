@@ -93,9 +93,17 @@ const Page = () => {
     e.preventDefault();
     setUpdatingProject(true);
 
+    // removing empty stakeholder fields
+    const finalStakeholders = [
+      ...stakeHolders.filter(
+        (stakeHolder) => stakeHolder.project_stakeholder_name
+      ),
+    ];
+    setStakeHolders([...finalStakeholders]);
+
     const projectDocRef = await getProjectRef(projectId);
 
-    const project_recommendations_stakeholder = stakeHolders.map(
+    const project_recommendations_stakeholder = finalStakeholders.map(
       (stakeHolder) => {
         return {
           key: nanoid(),
@@ -110,7 +118,7 @@ const Page = () => {
     await updateDoc(projectDocRef, {
       project_budget: budget,
       project_outcomes_and_metrics: outcomes,
-      project_stakeholders: stakeHolders,
+      project_stakeholders: finalStakeholders,
       project_recommendations_stakeholder,
     });
 
@@ -118,7 +126,7 @@ const Page = () => {
       ...project,
       project_budget: budget,
       project_outcomes_and_metrics: outcomes,
-      project_stakeholders: stakeHolders,
+      project_stakeholders: finalStakeholders,
       project_recommendations_stakeholder,
     });
 

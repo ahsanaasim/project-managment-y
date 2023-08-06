@@ -334,7 +334,7 @@ const Page = () => {
                 title="Edit Working Group Title"
                 open={showEditModal}
                 onOk={() => editGroup(editingGroup, newGroupName)}
-                onCancel={handleCancel}
+                onCancel={() => setShowEditModal(false)}
               >
                 <Input
                   value={newGroupName}
@@ -455,18 +455,6 @@ const Page = () => {
                               record: { key: string },
                               index
                             ) => (
-                              // <Input
-                              //   value={rowData}
-                              //   onChange={(e) =>
-                              //     changeRoleResponsibility(
-                              //       table.project_working_group_id,
-                              //       record.key,
-                              //       "project_working_group_responsibilities",
-                              //       e.target.value
-                              //     )
-                              //   }
-                              // />
-
                               <ScrollInput
                                 name="responsibilities"
                                 value={rowData}
