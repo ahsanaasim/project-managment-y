@@ -1,46 +1,63 @@
-import { List, Typography } from 'antd'
-import Link from 'next/link'
-import React from 'react'
+import { List, Typography } from "antd";
+import { DocumentData } from "firebase/firestore";
+import Link from "next/link";
+import React from "react";
 
-const projects = [
-  {
-    "name":"project 1",
-    "link":"/project/project-1"
-  },
-  {
-    "name":"project 2",
-    "link":"/project/project-1"
-  },
-  {
-    "name":"project 3",
-    "link":"/project/project-1"
-  },
-  {
-    "name":"project 4",
-    "link":"/project/project-1"
-  },
-  {
-    "name":"project 5",
-    "link":"/project/project-1"
-  },
-]
+// const projects = [
+//   {
+//     "name":"project 1",
+//     "link":"/project/project-1"
+//   },
+//   {
+//     "name":"project 2",
+//     "link":"/project/project-1"
+//   },
+//   {
+//     "name":"project 3",
+//     "link":"/project/project-1"
+//   },
+//   {
+//     "name":"project 4",
+//     "link":"/project/project-1"
+//   },
+//   {
+//     "name":"project 5",
+//     "link":"/project/project-1"
+//   },
+// ]
 
-const ProjectList = () => {
-  return <div>
-    <Typography.Title level={3}>My Projects</Typography.Title>
-    <List
-      header={<Typography.Text strong>PROJECT</Typography.Text>}
-      dataSource={projects}
-      renderItem={(project) => (
-        <List.Item>
-          <Link href={project.link}>
-            <Typography.Text>{project.name}</Typography.Text>
-          </Link>
-        </List.Item>
-      )}
-      bordered
-    />
-  </div>
-}
+const ProjectList = ({
+  projects,
+  fetchingProjects,
+}: {
+  projects: DocumentData[];
+  fetchingProjects: boolean;
+}) => {
+  return (
+    <div>
+      <Typography.Title level={3}>My Projects</Typography.Title>
+      <List
+        loading={fetchingProjects}
+        header={<Typography.Text strong>PROJECT</Typography.Text>}
+        dataSource={projects}
+        renderItem={(project) => (
+          <List.Item style={{ padding: "0" }}>
+            <Link
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "10px",
+              }}
+              href={`/project/${project.project_id}/2`}
+            >
+              <Typography.Text>{project.project_name}</Typography.Text>
+            </Link>
+          </List.Item>
+        )}
+        bordered
+      />
+    </div>
+  );
+};
 
-export default ProjectList
+export default ProjectList;
