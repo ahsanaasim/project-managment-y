@@ -242,7 +242,7 @@ const Page = () => {
                 {/* 3rd section */}
                 <Row gutter={20}>
                   <Col span={8}>
-                    <label htmlFor="outcome">Stakeholders</label>
+                    <label htmlFor="outcome">Stakeholder Name</label>
                   </Col>
                   <Col span={8}>
                     <label htmlFor="metric">Role</label>

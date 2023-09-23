@@ -190,7 +190,7 @@ const Page = () => {
       <Col span={20}>
         <Wrapper>
           <Spin tip="Saving RACI items" spinning={updatingProject}>
-            <Typography.Title>RACI</Typography.Title>
+            <Typography.Title>RACI Stakeholders</Typography.Title>
             {/* <Typography.Text>Stakeholders</Typography.Text> */}
             {project.project_stakeholders.length == 0 ? (
               <div>

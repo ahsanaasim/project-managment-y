@@ -342,7 +342,7 @@ const Page = () => {
                   placeholder="Working group name"
                 />
               </Modal>
-              <Typography.Title>Working Groups</Typography.Title>
+              <Typography.Title>Working Groups Stakeholders</Typography.Title>
               {project.project_stakeholders.length == 0 ? (
                 <div>
                   <Typography.Text type="danger">
@@ -425,7 +425,7 @@ const Page = () => {
                           pagination={false}
                         >
                           <Table.Column
-                            title="Role"
+                            title="Working Group Role"
                             dataIndex="project_working_group_role"
                             key="project_working_group_role"
                             render={(
