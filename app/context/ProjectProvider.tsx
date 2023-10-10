@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useProjectRef from "../hooks/useProjectRef";
 import { getDoc } from "firebase/firestore";
 import { usePathname } from "next/navigation";
-import { Project, ProjectContext } from "@/global";
+// import { Project, ProjectContext } from "@/global";
 import { nanoid } from "nanoid";
 
 const projectState = {
@@ -70,7 +70,7 @@ const context = createContext<ProjectContext>({ project: projectState });
 
 const ProjectProvider = ({ children }: { children: React.ReactNode }) => {
   const [project, setProject] = useState<Project>(projectState);
-  const [loadingProject, setLoadingProject] = useState(true);
+  const [loadingProject, setLoadingProject] = useState(false);
   const getProjectRef = useProjectRef();
   const path = usePathname();
   const projectId = path.split("/")[2];

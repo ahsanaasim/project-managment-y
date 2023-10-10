@@ -8,6 +8,7 @@ import useProjectRef from "@/app/hooks/useProjectRef";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
+import Footer from "@/app/components/Footer";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -138,9 +139,10 @@ const Page = () => {
                       onChange={(e) => setProjectLink(e.target.value)}
                     />
                   </Space>
-                  <Button htmlType="submit" type="primary" block>
+                  {/* <Button htmlType="submit" type="primary" block>
                     Next
-                  </Button>
+                  </Button> */}
+                  <Footer />
                 </Space>
               </form>
             </Spin>

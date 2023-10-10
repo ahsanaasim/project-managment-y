@@ -107,10 +107,10 @@
 //   // project_recommendations_stakeholder: recommendationsStakeholder[];
 // };
 
-// type ProjectContext = {
-//   project: Project;
-//   setProject?: Dispatch<SetStateAction<Project>>;
-// };
+type ProjectContext = {
+  project: Project;
+  setProject?: Dispatch<SetStateAction<Project>>;
+};
 
 // // ticket 10
 
@@ -143,7 +143,7 @@ type ProjectRaciDeliverableStakeholderUpdate = {
   project_stakeholder_deliverable_clarity: number;
   project_stakeholder_deliverable_comment: string;
   project_stakeholder_submitted: boolean;
-  project_stakeholder_date_submitted: string;
+  project_stakeholder_date_submitted: number;
 };
 
 type ProjectStatusUpdateDeliverable = {
@@ -181,7 +181,7 @@ type ProjectWgItem1 = {
 type ProjectRecommendationsStakeholder = {
   project_stakeholder_id: string;
   project_raci_deliverables: ProjectRaciDeliverable2[];
-  project_wg_items: ProjectWgItem1[];
+  project_wg_items: ProjectWgItem2[];
   project_recommendations_resources: string;
 };
 
@@ -220,7 +220,6 @@ type ProjectWorkingGroup = {
 };
 
 type Project = {
-  project_id: String;
   project_id: string;
   project_name: string;
   project_overview: string;
@@ -252,6 +251,7 @@ type Role = {
 };
 
 type Company = {
+  company_id: string;
   company_name: string;
   company_admin_email: string;
   projects: Project[];

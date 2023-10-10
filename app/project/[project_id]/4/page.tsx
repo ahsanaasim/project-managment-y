@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
+import Footer from "@/app/components/Footer";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -323,7 +324,10 @@ const Page = () => {
               <br />
               <br />
               <AddRowButton addRow={addRow} />
-              <ProjectFlowFooter previous={3} submitForm={saveRaci} />
+              {/* <ProjectFlowFooter previous={3} submitForm={saveRaci} /> */}
+              <br />
+              <br />
+              <Footer withPrevious={true} />
             </form>
           </Spin>
         </Wrapper>

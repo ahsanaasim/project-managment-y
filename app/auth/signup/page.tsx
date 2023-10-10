@@ -2,18 +2,16 @@
 import React, { FormEventHandler, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Space, Typography, message } from "antd";
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
-import { auth, db } from "@/app/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/app/firebase";
 import { FirebaseError } from "firebase/app";
-import { collection, doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import useGoogleSignIn from "@/app/helpers/googleSignIn";
+import checkUsernameAvailability from "@/app/helpers/checkUsernameAvailability";
+import registerUserAfterSignUp from "@/app/helpers/registerUserAfterSignUp";
 
 const App: React.FC = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -23,22 +21,29 @@ const App: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      // checking if username is taken
+      if (await checkUsernameAvailability(username)) {
+        message.error("Username is already taken");
+        return;
+      } else {
+        // registering user
+        await createUserWithEmailAndPassword(auth, email, password);
 
-      setEmail("");
-      setPassword("");
+        // save to companies collection
+        await registerUserAfterSignUp(username, email);
+
+        setEmail("");
+        setPassword("");
+        setUsername("");
+
+        router.push("/project/1");
+      }
 
       // user collection
-      const userDocumentRef = doc(collection(db, "users"));
-      await setDoc(userDocumentRef, {
-        user_email_address: response.user.email,
-      });
-
-      router.push("/project/1");
+      // const userDocumentRef = doc(collection(db, "users"));
+      // await setDoc(userDocumentRef, {
+      //   user_email_address: response.user.email,
+      // });
     } catch (error) {
       if (error instanceof FirebaseError) {
         const { code } = error;
@@ -53,10 +58,23 @@ const App: React.FC = () => {
           message.error("Email address already in use");
         else {
           message.error("Something went wrong");
-          console.log(error);
         }
       }
     }
+  };
+
+  const googleSignIn = async () => {
+    await signInWithGoogle();
+
+    const user = auth.currentUser;
+
+    if (!user) return message.warning("Something went wrong");
+
+    if (!user.email) return message.warning("Something went wrong");
+
+    const usernameFromEmail = user.email.split("@")[0];
+
+    await registerUserAfterSignUp(usernameFromEmail, user.email);
   };
 
   return (
@@ -72,6 +90,14 @@ const App: React.FC = () => {
               size="large"
               style={{ display: "flex" }}
             >
+              <Space direction="vertical" style={{ display: "flex" }}>
+                <label htmlFor="username">Username</label>
+                <Input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </Space>
+
               <Space direction="vertical" style={{ display: "flex" }}>
                 <label htmlFor="email">Email</label>
                 <Input
@@ -92,7 +118,7 @@ const App: React.FC = () => {
               </Button>
               <Typography style={{ textAlign: "center" }}>or</Typography>
               <Button
-                onClick={signInWithGoogle}
+                onClick={googleSignIn}
                 style={{
                   borderRadius: "50px",
                   margin: "0 auto",

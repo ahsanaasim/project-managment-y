@@ -1,4 +1,5 @@
 "use client";
+import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
 import Wrapper from "@/app/components/Wrapper";
@@ -151,7 +152,7 @@ const Page = () => {
                   render={() => <Button type="link">Send</Button>}
                 />
               </Table>
-              <Space
+              {/* <Space
                 style={{
                   margin: "2rem 0",
                   display: "flex",
@@ -175,7 +176,10 @@ const Page = () => {
                 >
                   Next
                 </Button>
-              </Space>
+              </Space> */}
+              <br />
+              <br />
+              <Footer withPrevious />
             </form>
           </Spin>
         </Wrapper>

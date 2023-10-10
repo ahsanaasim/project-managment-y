@@ -13,6 +13,7 @@ import useProjectId from "@/app/hooks/useProjectId";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
+import Footer from "@/app/components/Footer";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -317,8 +318,9 @@ const Page = () => {
                 >
                   Add Stakeholder
                 </Button>
+                <Footer withPrevious={true} />
               </Space>
-              <ProjectFlowFooter previous={2} submitForm={saveStakeholders} />
+              {/* <ProjectFlowFooter previous={2} submitForm={saveStakeholders} /> */}
             </form>
           </Spin>
         </Wrapper>

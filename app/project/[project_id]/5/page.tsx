@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
+import Footer from "@/app/components/Footer";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
@@ -520,10 +521,13 @@ const Page = () => {
                 >
                   Add Working Group
                 </Button>
-                <ProjectFlowFooter
+                {/* <ProjectFlowFooter
                   previous={4}
                   submitForm={saveWorkingGroups}
-                />
+                /> */}
+                <br />
+                <br />
+                <Footer withPrevious />
               </form>
             </div>
           </Spin>

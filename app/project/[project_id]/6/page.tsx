@@ -26,6 +26,7 @@ import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import { DeleteOutlined, FileOutlined } from "@ant-design/icons";
 import FirebaseStorage from "firebase/storage";
+import Footer from "@/app/components/Footer";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -148,7 +149,10 @@ const Page = () => {
                 <br />
                 <br />
                 <Button type="primary">Generate Recommendations</Button>
-                <ProjectFlowFooter previous={5} submitForm={uploadDocuments} />
+                {/* <ProjectFlowFooter previous={5} submitForm={uploadDocuments} /> */}
+                <br />
+                <br />
+                <Footer withPrevious />
               </form>
             </Spin>
           </Spin>
