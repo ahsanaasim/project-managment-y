@@ -6,7 +6,7 @@ import Wrapper from "@/app/components/Wrapper";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
 import useProjectId from "@/app/hooks/useProjectId";
-import useProjectRef from "@/app/hooks/useProjectRef";
+import useProjectRef from "@/app/hooks/useProject";
 import { recommendationsStakeholder } from "@/global";
 import { Button, Col, Input, Row, Space, Spin, Table, Typography } from "antd";
 import { updateDoc } from "firebase/firestore";

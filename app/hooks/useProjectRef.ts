@@ -1,22 +1,24 @@
-import { doc, getDocs, query, where } from "firebase/firestore";
-import useProjectsCollectionRef from "./useProjectsCollectionRef";
-import useUserRef from "./useUserRef";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import useCompanyRef from "./useCompanyRef";
+import { db } from "../firebase";
 
 const useProjectRef = () => {
-    const getProjectsCollectionRef = useProjectsCollectionRef();
-    const getUserRef = useUserRef()
+  const getCompanyRef = useCompanyRef();
 
-    const getProjectRef = async (projectId: string) => {
+  const getProjectRef = async (projectId: string) => {
+    const companyRef = await getCompanyRef();
+    const projectsRef = collection(companyRef, "projects");
+    const projectQuery = query(
+      projectsRef,
+      where("project_id", "==", projectId)
+    );
+    const projectDoc = (await getDocs(projectQuery)).docs[0];
+    const projectDocRef = doc(companyRef, "projects", projectDoc.id);
 
-        const projectsCollectionRef = await getProjectsCollectionRef()
-        const projectQuery = query(projectsCollectionRef, where("project_id", "==", projectId));
-        const projectDoc = (await getDocs(projectQuery)).docs[0];
-        const projectDocRef = doc(await getUserRef(), "projects", projectDoc.id);
+    return projectDocRef;
+  };
 
-        return projectDocRef;
-    }
-
-    return getProjectRef;
-}
+  return getProjectRef;
+};
 
 export default useProjectRef;

@@ -7,7 +7,7 @@ import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import ProjectFlowFooter from "../ProjectFlowFooter";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import { OutcomeMetric, Stakeholder } from "@/global";
-import useProjectRef from "@/app/hooks/useProjectRef";
+import useProjectRef from "@/app/hooks/useProject";
 import { usePathname, useRouter } from "next/navigation";
 import useProjectId from "@/app/hooks/useProjectId";
 import { updateDoc } from "firebase/firestore";

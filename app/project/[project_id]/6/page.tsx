@@ -17,7 +17,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "@/app/firebase";
-import useProjectRef from "@/app/hooks/useProjectRef";
+import useProjectRef from "@/app/hooks/useProject";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";

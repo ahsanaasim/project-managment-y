@@ -27,7 +27,7 @@ import { WorkingGroup, WorkingGroupTable } from "@/global";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import { table } from "console";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
-import useProjectRef from "@/app/hooks/useProjectRef";
+import useProjectRef from "@/app/hooks/useProject";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";

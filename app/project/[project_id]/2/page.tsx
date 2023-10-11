@@ -18,27 +18,37 @@ const Page = () => {
   const [scope, setScope] = useState(project.project_scope);
   const [projectLink, setProjectLink] = useState(project.project_link_to_plan);
   const [updatingProject, setUpdatingProject] = useState(false);
-  const getProjectRef = useProjectRef();
   const path = usePathname();
   const router = useRouter();
   const projectId = path.split("/")[2];
+  const getProjectRef = useProjectRef();
 
   const createProjectDetails: FormEventHandler = async (e) => {
     e.preventDefault();
     setUpdatingProject(true);
 
-    const projectDocRef = await getProjectRef(projectId);
+    // const projectDocRef = await getProjectRef(projectId);
 
-    await updateDoc(projectDocRef, {
-      project_overview: overview,
-      project_problem: problem,
-      project_purpose: purpose,
-      project_scope: scope,
-      project_link_to_plan: projectLink,
-    });
+    // await updateDoc(projectDocRef, {
+    //   project_overview: overview,
+    //   project_problem: problem,
+    //   project_purpose: purpose,
+    //   project_scope: scope,
+    //   project_link_to_plan: projectLink,
+    // });
 
-    setProject({
-      ...project,
+    // setProject({
+    //   ...project,
+    //   project_overview: overview,
+    //   project_problem: problem,
+    //   project_purpose: purpose,
+    //   project_scope: scope,
+    //   project_link_to_plan: projectLink,
+    // });
+
+    const projectRef = await getProjectRef(projectId);
+
+    await updateDoc(projectRef, {
       project_overview: overview,
       project_problem: problem,
       project_purpose: purpose,
@@ -75,12 +85,7 @@ const Page = () => {
                 >
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="overview">Overview</label>
-                    {/* <Input.TextArea
-                      name="overview"
-                      id="overview"
-                      value={overview}
-                      onChange={(e) => setOverview(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="overview"
                       value={overview}
@@ -89,12 +94,7 @@ const Page = () => {
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="problem">Problem</label>
-                    {/* <Input.TextArea
-                      name="problem"
-                      id="problem"
-                      value={problem}
-                      onChange={(e) => setProblem(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="problem"
                       value={problem}
@@ -103,12 +103,7 @@ const Page = () => {
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="purpose">Purpose</label>
-                    {/* <Input.TextArea
-                      name="purpose"
-                      id="purpose"
-                      value={purpose}
-                      onChange={(e) => setPurpose(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="purpose"
                       value={purpose}
@@ -117,12 +112,7 @@ const Page = () => {
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="scope">Scope</label>
-                    {/* <Input.TextArea
-                      name="scope"
-                      id="scope"
-                      value={scope}
-                      onChange={(e) => setScope(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="scope"
                       value={scope}
@@ -142,7 +132,7 @@ const Page = () => {
                   {/* <Button htmlType="submit" type="primary" block>
                     Next
                   </Button> */}
-                  <Footer />
+                  <Footer saveHandler={createProjectDetails} />
                 </Space>
               </form>
             </Spin>

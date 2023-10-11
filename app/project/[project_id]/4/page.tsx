@@ -18,7 +18,7 @@ import ProjectFlowFooter from "../ProjectFlowFooter";
 import { CloseOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import { RaciItem } from "@/global";
-import useProjectRef from "@/app/hooks/useProjectRef";
+import useProjectRef from "@/app/hooks/useProject";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
