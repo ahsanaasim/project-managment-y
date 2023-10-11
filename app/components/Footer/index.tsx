@@ -5,9 +5,11 @@ import React from "react";
 const Footer = ({
   withPrevious,
   saveHandler,
+  confirmationHandler,
 }: {
   withPrevious?: boolean;
   saveHandler: React.FormEventHandler;
+  confirmationHandler: () => Promise<void>;
 }) => {
   return (
     <footer>
@@ -16,7 +18,10 @@ const Footer = ({
         <Button type="primary" onClick={saveHandler}>
           Save
         </Button>
-        <Button icon={<RightOutlined />}></Button>
+        <Button
+          icon={<RightOutlined />}
+          onClick={() => confirmationHandler()}
+        ></Button>
       </Space>
     </footer>
   );

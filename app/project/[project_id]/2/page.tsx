@@ -1,6 +1,16 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Col, Input, Row, Space, Spin, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Spin,
+  Typography,
+  message,
+} from "antd";
 import { getDoc, updateDoc } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import React, { FormEventHandler, useEffect, useState } from "react";
@@ -9,6 +19,8 @@ import { useProjectContext } from "@/app/context/ProjectProvider";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
+import useProject from "@/app/hooks/useProject";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -22,29 +34,12 @@ const Page = () => {
   const router = useRouter();
   const projectId = path.split("/")[2];
   const getProjectRef = useProjectRef();
+  const getProject = useProject();
+  const { confirm } = Modal;
 
   const createProjectDetails: FormEventHandler = async (e) => {
     e.preventDefault();
     setUpdatingProject(true);
-
-    // const projectDocRef = await getProjectRef(projectId);
-
-    // await updateDoc(projectDocRef, {
-    //   project_overview: overview,
-    //   project_problem: problem,
-    //   project_purpose: purpose,
-    //   project_scope: scope,
-    //   project_link_to_plan: projectLink,
-    // });
-
-    // setProject({
-    //   ...project,
-    //   project_overview: overview,
-    //   project_problem: problem,
-    //   project_purpose: purpose,
-    //   project_scope: scope,
-    //   project_link_to_plan: projectLink,
-    // });
 
     const projectRef = await getProjectRef(projectId);
 
@@ -56,7 +51,59 @@ const Page = () => {
       project_link_to_plan: projectLink,
     });
 
-    router.push(`/project/${projectId}/3`);
+    setProject({
+      ...project,
+      project_overview: overview,
+      project_problem: problem,
+      project_purpose: purpose,
+      project_scope: scope,
+      project_link_to_plan: projectLink,
+    });
+
+    setUpdatingProject(false);
+    message.success("Changes saved");
+  };
+
+  const showConfirm = () => {
+    confirm({
+      title: "You have unsaved changes.",
+      icon: <ExclamationCircleFilled />,
+      // content: 'Some descriptions',
+      okText: "Continue without Saving",
+      cancelText: "Cancel",
+      onOk() {
+        router.push(`/project/${projectId}/3`);
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  };
+
+  const saveConfirmation = async () => {
+    console.log("running");
+
+    const projectInDB = await getProject(projectId);
+    const {
+      project_overview,
+      project_problem,
+      project_purpose,
+      project_scope,
+      project_link_to_plan,
+    } = projectInDB as Project;
+
+    console.log("project from db", projectInDB);
+    console.log("project from local", project);
+
+    if (
+      project_overview !== overview ||
+      project_problem !== problem ||
+      project_purpose !== purpose ||
+      project_scope !== scope ||
+      project_link_to_plan !== projectLink
+    ) {
+      showConfirm();
+    } else router.push(`/project/${projectId}/3`);
   };
 
   useEffect(() => {
@@ -132,7 +179,10 @@ const Page = () => {
                   {/* <Button htmlType="submit" type="primary" block>
                     Next
                   </Button> */}
-                  <Footer saveHandler={createProjectDetails} />
+                  <Footer
+                    saveHandler={createProjectDetails}
+                    confirmationHandler={saveConfirmation}
+                  />
                 </Space>
               </form>
             </Spin>
