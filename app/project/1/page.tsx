@@ -23,13 +23,15 @@ import FullpageLoader from "@/app/components/FullpageLoader";
 import { useRouter } from "next/navigation";
 import getCompanies from "@/app/helpers/getCompanies";
 import getCompaniesCount from "@/app/helpers/getCompaniesCount";
+import useGetProjects from "@/app/hooks/useGetProjects";
+import useProjects from "@/app/hooks/useProjects";
 
 const Page = () => {
   const [name, setName] = useState("");
   const [projects, setProjects] = useState<DocumentData[]>([]);
   const [fetchingProjects, setFetchingProjects] = useState(true);
   const { user, loadingUser } = useAppContext();
-  const getUserProjects = useUserProjects();
+  const getProjects = useProjects();
   const router = useRouter();
 
   const createProject: FormEventHandler = async (e) => {
@@ -48,13 +50,7 @@ const Page = () => {
         const tempUser = company.users[0];
         const projects = company.projects;
 
-        console.log(company);
-
         if (tempUser.user_email == user.email) {
-          console.log("matched");
-          console.log(tempUser);
-          console.log(user);
-
           const newProject = {
             project_id: nanoid(),
             project_name: name,
@@ -88,7 +84,7 @@ const Page = () => {
             // Add the new project document to the projects sub-collection with a unique ID
             await addDoc(projectsCollectionRef, newProject);
 
-            setProjects(await getUserProjects());
+            setProjects(await getProjects());
             setFetchingProjects(false);
             setName("");
           });
@@ -97,63 +93,6 @@ const Page = () => {
 
       console.log(user?.email);
     } catch (error) {}
-
-    // try {
-    //   // save in firestore
-    //   const usersCollectionRef = collection(db, "users");
-    //   const userQuery = query(
-    //     usersCollectionRef,
-    //     where("user_email_address", "==", user?.email)
-    //   );
-
-    //   const querySnapshot = await getDocs(userQuery);
-
-    //   querySnapshot.forEach(async (userDoc) => {
-    //     const userDocRef = doc(db, "users", userDoc.id);
-    //     const projectsCollectionRef = collection(userDocRef, "projects");
-
-    //     // Add the new project document to the projects sub-collection with a unique ID
-    //     await addDoc(projectsCollectionRef, {
-    //       project_id: nanoid(),
-    //       project_name: name,
-    //       project_overview: "",
-    //       project_problem: "",
-    //       project_purpose: "",
-    //       project_scope: "",
-    //       project_link_to_plan: "",
-    //       project_budget: "",
-    //       project_outcomes_and_metrics: [
-    //         {
-    //           project_metric: "",
-    //           project_outcome: "",
-    //           item_id: nanoid(),
-    //         },
-    //       ],
-    //       project_stakeholders: [],
-    //       project_raci_items: [
-    //         {
-    //           raci_item_key: nanoid(),
-    //           project_raci_deliverable: "",
-    //           project_raci_responsible_stakeholder_ids: [],
-    //           project_raci_accountable_stakeholder_ids: [],
-    //           project_raci_consulted_stakeholder_ids: [],
-    //           project_raci_informed_stakeholder_ids: [],
-    //         },
-    //       ],
-    //       project_working_groups: [],
-    //       project_documents: [],
-    //       project_recommendations_general: "",
-    //       project_recommendations_stakeholder: [],
-    //     });
-
-    //     setProjects(await getUserProjects());
-    //     setFetchingProjects(false);
-    //     setName("");
-    //   });
-    // } catch (error) {
-    //   message.error("Something went wrong");
-    //   console.log(error);
-    // }
   };
 
   useEffect(() => {
@@ -162,7 +101,9 @@ const Page = () => {
         router.push("/auth");
       } else {
         (async () => {
-          setProjects(await getUserProjects());
+          setProjects(await getProjects());
+          console.log(await getProjects());
+
           setFetchingProjects(false);
         })();
       }
