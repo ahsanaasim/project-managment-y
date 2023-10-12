@@ -5,22 +5,31 @@ import React from "react";
 const Footer = ({
   withPrevious,
   saveHandler,
-  confirmationHandler,
+  confirmationHandlerPrevious,
+  confirmationHandlerNext,
 }: {
   withPrevious?: boolean;
   saveHandler: React.FormEventHandler;
-  confirmationHandler: () => Promise<void>;
+  confirmationHandlerPrevious?: () => Promise<void>;
+  confirmationHandlerNext: () => Promise<void>;
 }) => {
   return (
     <footer>
       <Space>
-        {withPrevious && <Button icon={<LeftOutlined />}></Button>}
+        {withPrevious && (
+          <Button
+            onClick={() => {
+              confirmationHandlerPrevious && confirmationHandlerPrevious();
+            }}
+            icon={<LeftOutlined />}
+          ></Button>
+        )}
         <Button type="primary" onClick={saveHandler}>
           Save
         </Button>
         <Button
           icon={<RightOutlined />}
-          onClick={() => confirmationHandler()}
+          onClick={() => confirmationHandlerNext()}
         ></Button>
       </Space>
     </footer>

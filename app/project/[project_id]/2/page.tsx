@@ -1,17 +1,7 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import {
-  Button,
-  Col,
-  Input,
-  Modal,
-  Row,
-  Space,
-  Spin,
-  Typography,
-  message,
-} from "antd";
-import { getDoc, updateDoc } from "firebase/firestore";
+import { Col, Input, Modal, Row, Space, Spin, Typography, message } from "antd";
+import { updateDoc } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import useProjectRef from "@/app/hooks/useProjectRef";
@@ -21,6 +11,7 @@ import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -35,7 +26,22 @@ const Page = () => {
   const projectId = path.split("/")[2];
   const getProjectRef = useProjectRef();
   const getProject = useProject();
-  const { confirm } = Modal;
+  const showConfirm = useNextConfirmation();
+
+  // const showConfirm = () => {
+  //   const { confirm } = Modal;
+
+  //   confirm({
+  //     title: "You have unsaved changes.",
+  //     icon: <ExclamationCircleFilled />,
+  //     // content: 'Some descriptions',
+  //     okText: "Continue without Saving",
+  //     cancelText: "Cancel",
+  //     onOk() {
+  //       router.push(`/project/${projectId}/3`);
+  //     },
+  //   });
+  // };
 
   const createProjectDetails: FormEventHandler = async (e) => {
     e.preventDefault();
@@ -64,22 +70,6 @@ const Page = () => {
     message.success("Changes saved");
   };
 
-  const showConfirm = () => {
-    confirm({
-      title: "You have unsaved changes.",
-      icon: <ExclamationCircleFilled />,
-      // content: 'Some descriptions',
-      okText: "Continue without Saving",
-      cancelText: "Cancel",
-      onOk() {
-        router.push(`/project/${projectId}/3`);
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
-  };
-
   const saveConfirmation = async () => {
     console.log("running");
 
@@ -102,7 +92,7 @@ const Page = () => {
       project_scope !== scope ||
       project_link_to_plan !== projectLink
     ) {
-      showConfirm();
+      showConfirm(projectId, 3);
     } else router.push(`/project/${projectId}/3`);
   };
 
@@ -181,7 +171,7 @@ const Page = () => {
                   </Button> */}
                   <Footer
                     saveHandler={createProjectDetails}
-                    confirmationHandler={saveConfirmation}
+                    confirmationHandlerNext={saveConfirmation}
                   />
                 </Space>
               </form>
