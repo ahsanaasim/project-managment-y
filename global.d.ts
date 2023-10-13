@@ -171,7 +171,7 @@ type StatusUpdate = {
 };
 
 type ProjectWgItem1 = {
-  project_wg_item_id: string;
+  key: string; // using key instead of project_wg_item_id
   project_wg_role: string;
   project_wg_responsibilities: string;
   project_wg_stakeholders: string[];

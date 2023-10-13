@@ -23,23 +23,24 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import ProjectFlowFooter from "../ProjectFlowFooter";
-import { WorkingGroup, WorkingGroupTable } from "@/global";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import { table } from "console";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
-import useProjectRef from "@/app/hooks/useProject";
+import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
+import useProject from "@/app/hooks/useProject";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
-  const [tableData, setTableData] = useState<WorkingGroup[]>(
+  const [tableData, setTableData] = useState<ProjectWorkingGroup[]>(
     project.project_working_groups
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,8 +49,10 @@ const Page = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState("");
   const getProjectRef = useProjectRef();
+  const getProject = useProject();
   const projectId = useProjectId();
   const router = useRouter();
+  const showConfirm = useNextConfirmation();
 
   useEffect(() => {
     setTableData(project.project_working_groups);
@@ -65,14 +68,15 @@ const Page = () => {
     setTableData([
       ...tableData,
       {
-        project_working_group_id: nanoid(),
-        project_working_group_title: newGroupName,
-        project_working_group_item: [
+        project_wg_id: nanoid(),
+        project_wg_title: newGroupName,
+        project_wg_item: [
           {
             key: nanoid(),
-            project_working_group_role: "",
-            project_working_group_responsibilities: "",
-            project_working_group_stakeholders: [],
+            project_wg_role: "",
+            project_wg_responsibilities: "",
+            project_wg_stakeholders: [],
+            project_wg_recommendations: "",
           },
         ],
       },
@@ -101,22 +105,22 @@ const Page = () => {
   ) => {
     setTableData([
       ...tableData.map((table) => {
-        if (table.project_working_group_id == tableKey) {
+        if (table.project_wg_id == tableKey) {
           return {
             ...table,
-            project_working_group_item: [
-              ...table.project_working_group_item.map((row) => {
+            project_wg_item: [
+              ...table.project_wg_item.map((row) => {
                 if (row.key == rowKey) {
                   if (
-                    row.project_working_group_stakeholders.includes(
+                    row.project_wg_stakeholders.includes(
                       e.dataTransfer.getData("text/plain")
                     )
                   )
                     return { ...row };
                   return {
                     ...row,
-                    project_working_group_stakeholders: [
-                      ...row.project_working_group_stakeholders,
+                    project_wg_stakeholders: [
+                      ...row.project_wg_stakeholders,
                       e.dataTransfer.getData("text/plain"),
                     ],
                   };
@@ -136,18 +140,17 @@ const Page = () => {
   ) => {
     setTableData([
       ...tableData.map((table) => {
-        if (table.project_working_group_id == tableId) {
+        if (table.project_wg_id == tableId) {
           return {
             ...table,
-            project_working_group_item: [
-              ...table.project_working_group_item.map((row) => {
+            project_wg_item: [
+              ...table.project_wg_item.map((row) => {
                 if (row.key == rowKey) {
                   return {
                     ...row,
-                    project_working_group_stakeholders:
-                      row.project_working_group_stakeholders.filter(
-                        (stakeholder) => stakeholder != stakeholderId
-                      ),
+                    project_wg_stakeholders: row.project_wg_stakeholders.filter(
+                      (stakeholder) => stakeholder != stakeholderId
+                    ),
                   };
                 } else return { ...row };
               }),
@@ -201,22 +204,19 @@ const Page = () => {
   };
 
   const addRow = (tableId: string) => {
-    console.log("adding row...");
-
     setTableData([
       ...tableData.map((table) => {
-        if (table.project_working_group_id == tableId) {
-          console.log(table.project_working_group_item);
-
+        if (table.project_wg_id == tableId) {
           return {
             ...table,
-            project_working_group_item: [
-              ...table.project_working_group_item,
+            project_wg_item: [
+              ...table.project_wg_item,
               {
-                key: nanoid(),
-                project_working_group_role: "",
-                project_working_group_responsibilities: "",
-                project_working_group_stakeholders: [],
+                key: "",
+                project_wg_role: "",
+                project_wg_responsibilities: "",
+                project_wg_stakeholders: [],
+                project_wg_recommendations: "",
               },
             ],
           };
@@ -228,13 +228,11 @@ const Page = () => {
   const deleteRow = (tableId: string, rowKey: string) => {
     setTableData([
       ...tableData.map((table) => {
-        if (table.project_working_group_id == tableId) {
+        if (table.project_wg_id == tableId) {
           return {
             ...table,
-            project_working_group_item: [
-              ...table.project_working_group_item.filter(
-                (row) => row.key != rowKey
-              ),
+            project_wg_item: [
+              ...table.project_wg_item.filter((row) => row.key != rowKey),
             ],
           };
         } else return { ...table };
@@ -268,11 +266,11 @@ const Page = () => {
   ) => {
     setTableData([
       ...tableData.map((table) => {
-        if (table.project_working_group_id == tableKey) {
+        if (table.project_wg_id == tableKey) {
           return {
             ...table,
             project_working_group_item: [
-              ...table.project_working_group_item.map((row) => {
+              ...table.project_wg_item.map((row) => {
                 if (row.key == rowKey) {
                   return { ...row, [column]: value };
                 } else return { ...row };
@@ -286,14 +284,14 @@ const Page = () => {
 
   const removeGroup = (tableId: string) => {
     setTableData([
-      ...tableData.filter((table) => table.project_working_group_id != tableId),
+      ...tableData.filter((table) => table.project_wg_id != tableId),
     ]);
   };
 
   const editGroup = (tableId: string, newName: string) => {
     setTableData([
       ...tableData.map((table) => {
-        if (table.project_working_group_id == tableId) {
+        if (table.project_wg_id == tableId) {
           return { ...table, project_working_group_title: newName };
         } else return { ...table };
       }),
@@ -308,6 +306,18 @@ const Page = () => {
     setEditingGroup(tableId);
     setNewGroupName(oldName);
     setShowEditModal(true);
+  };
+
+  const saveConfirmation = async (isNext: boolean) => {
+    const goingTo = isNext ? 6 : 4;
+    const projectInDB = (await getProject(projectId)) as Project;
+
+    if (
+      JSON.stringify(projectInDB.project_raci_deliverables) !==
+      JSON.stringify(tableData)
+    ) {
+      showConfirm(projectId, goingTo);
+    } else router.push(`/project/${projectId}/${goingTo}`);
   };
 
   return (
@@ -396,14 +406,14 @@ const Page = () => {
                       >
                         <Typography.Text strong>
                           <Space>
-                            {table.project_working_group_title}
+                            {table.project_wg_title}
                             <Button
                               size="small"
                               type="default"
                               onClick={() =>
                                 openEditModal(
-                                  table.project_working_group_id,
-                                  table.project_working_group_title
+                                  table.project_wg_id,
+                                  table.project_wg_title
                                 )
                               }
                             >
@@ -412,16 +422,14 @@ const Page = () => {
                             <Button
                               size="small"
                               type="default"
-                              onClick={() =>
-                                removeGroup(table.project_working_group_id)
-                              }
+                              onClick={() => removeGroup(table.project_wg_id)}
                             >
                               Delete
                             </Button>
                           </Space>
                         </Typography.Text>
                         <Table
-                          dataSource={table.project_working_group_item}
+                          dataSource={table.project_wg_item}
                           style={{ marginTop: "2rem" }}
                           pagination={false}
                         >
@@ -438,7 +446,7 @@ const Page = () => {
                                 value={rowData}
                                 onChange={(e) =>
                                   changeRoleResponsibility(
-                                    table.project_working_group_id,
+                                    table.project_wg_id,
                                     record.key,
                                     "project_working_group_role",
                                     e.target.value
@@ -461,7 +469,7 @@ const Page = () => {
                                 value={rowData}
                                 onChange={(e) =>
                                   changeRoleResponsibility(
-                                    table.project_working_group_id,
+                                    table.project_wg_id,
                                     record.key,
                                     "project_working_group_responsibilities",
                                     e.target.value
@@ -478,7 +486,7 @@ const Page = () => {
                               renderStakeholders(
                                 rowData,
                                 record.key,
-                                table.project_working_group_id
+                                table.project_wg_id
                               )
                             }
                           />
@@ -490,10 +498,7 @@ const Page = () => {
                             ) => (
                               <Button
                                 onClick={() =>
-                                  deleteRow(
-                                    table.project_working_group_id,
-                                    record.key
-                                  )
+                                  deleteRow(table.project_wg_id, record.key)
                                 }
                                 icon={<MinusCircleOutlined />}
                                 danger
@@ -503,7 +508,7 @@ const Page = () => {
                         </Table>
                         <br />
                         <Button
-                          onClick={() => addRow(table.project_working_group_id)}
+                          onClick={() => addRow(table.project_wg_id)}
                           icon={<PlusCircleOutlined />}
                         >
                           Add Row
@@ -527,7 +532,12 @@ const Page = () => {
                 /> */}
                 <br />
                 <br />
-                <Footer withPrevious />
+                <Footer
+                  saveHandler={saveWorkingGroups}
+                  confirmationHandlerNext={() => saveConfirmation(true)}
+                  confirmationHandlerPrevious={() => saveConfirmation(false)}
+                  withPrevious
+                />
               </form>
             </div>
           </Spin>
