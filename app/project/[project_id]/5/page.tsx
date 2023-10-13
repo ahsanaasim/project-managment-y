@@ -435,8 +435,8 @@ const Page = () => {
                         >
                           <Table.Column
                             title="Working Group Role"
-                            dataIndex="project_working_group_role"
-                            key="project_working_group_role"
+                            dataIndex="project_wg_role"
+                            key="project_wg_role"
                             render={(
                               rowData,
                               record: { key: string },
@@ -448,7 +448,7 @@ const Page = () => {
                                   changeRoleResponsibility(
                                     table.project_wg_id,
                                     record.key,
-                                    "project_working_group_role",
+                                    "project_wg_role",
                                     e.target.value
                                   )
                                 }
@@ -457,8 +457,8 @@ const Page = () => {
                           />
                           <Table.Column
                             title="Responsibilities"
-                            dataIndex="project_working_group_responsibilities"
-                            key="project_working_group_responsibilities"
+                            dataIndex="project_wg_responsibilities"
+                            key="project_wg_responsibilities"
                             render={(
                               rowData,
                               record: { key: string },
@@ -471,7 +471,7 @@ const Page = () => {
                                   changeRoleResponsibility(
                                     table.project_wg_id,
                                     record.key,
-                                    "project_working_group_responsibilities",
+                                    "project_wg_responsibilities",
                                     e.target.value
                                   )
                                 }
@@ -480,8 +480,8 @@ const Page = () => {
                           />
                           <Table.Column
                             title="Stakeholders"
-                            dataIndex="project_working_group_stakeholders"
-                            key="project_working_group_stakeholders"
+                            dataIndex="project_wg_stakeholders"
+                            key="project_wg_stakeholders"
                             render={(rowData, record: { key: string }, index) =>
                               renderStakeholders(
                                 rowData,
