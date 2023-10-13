@@ -17,14 +17,15 @@ import AddRowButton from "../AddRowButton";
 import ProjectFlowFooter from "../ProjectFlowFooter";
 import { CloseOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { useProjectContext } from "@/app/context/ProjectProvider";
-import { RaciItem } from "@/global";
-import useProjectRef from "@/app/hooks/useProject";
+import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
+import useProject from "@/app/hooks/useProject";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -32,11 +33,15 @@ const Page = () => {
   const getProjectRef = useProjectRef();
   const projectId = useProjectId();
   const router = useRouter();
-  const [data, setData] = useState<RaciItem[]>(project.project_raci_items);
+  const getProject = useProject();
+  const showConfirm = useNextConfirmation();
+  const [data, setData] = useState<ProjectRaciDeliverable1[]>(
+    project.project_raci_deliverables
+  );
 
   const handleOnDrop = (
     e: React.DragEvent,
-    column: keyof RaciItem,
+    column: keyof ProjectRaciDeliverable1,
     rowKey: string
   ) => {
     setData([
@@ -65,7 +70,11 @@ const Page = () => {
     e.dataTransfer.setData("text/plain", stakeholderId);
   };
 
-  const removeStakeholder = (name: string, rowKey: string, column: string) => {
+  const removeStakeholder = (
+    name: string,
+    rowKey: string,
+    column: keyof ProjectRaciDeliverable1
+  ) => {
     setData([
       ...data.map((row) => {
         if (rowKey == row.key) {
@@ -91,7 +100,7 @@ const Page = () => {
   const renderStakeholders = (
     rowData: string[],
     rowKey: string,
-    column: string
+    column: keyof ProjectRaciDeliverable1
   ) => {
     return (
       <ul
@@ -135,11 +144,15 @@ const Page = () => {
       ...data,
       {
         key: nanoid(),
-        project_raci_deliverable: "",
+        project_raci_deliverable_name: "",
         project_raci_responsible_stakeholder_ids: [],
         project_raci_accountable_stakeholder_ids: [],
         project_raci_consulted_stakeholder_ids: [],
         project_raci_informed_stakeholder_ids: [],
+        project_raci_responsible_recommendations: "",
+        project_raci_accountable_recommendations: "",
+        project_raci_consulted_recommendations: "",
+        project_raci_informed_recommendations: "",
       },
     ]);
   };
@@ -156,12 +169,12 @@ const Page = () => {
     const projectDocRef = await getProjectRef(projectId);
 
     await updateDoc(projectDocRef, {
-      project_raci_items: data,
+      project_raci_deliverables: data,
     });
 
     setProject({
       ...project,
-      project_raci_items: data,
+      project_raci_deliverables: data,
     });
 
     router.push(`/project/${projectId}/5`);
@@ -171,17 +184,27 @@ const Page = () => {
     setData([
       ...data.map((row) => {
         if (row.key == rowKey) {
-          return { ...row, project_raci_deliverable: deliverable };
+          return { ...row, project_raci_deliverables: deliverable };
         } else return { ...row };
       }),
     ]);
   };
 
   useEffect(() => {
-    setData([...project.project_raci_items]);
+    setData([...project.project_raci_deliverables]);
   }, [project]);
 
-  console.log(project.project_stakeholders);
+  const saveConfirmation = async (isNext: boolean) => {
+    const goingTo = isNext ? 5 : 3;
+    const projectInDB = (await getProject(projectId)) as Project;
+
+    if (
+      JSON.stringify(projectInDB.project_raci_deliverables) !==
+      JSON.stringify(data)
+    ) {
+      showConfirm(projectId, goingTo);
+    } else router.push(`/project/${projectId}/${goingTo}`);
+  };
 
   return (
     <Row>
@@ -327,7 +350,12 @@ const Page = () => {
               {/* <ProjectFlowFooter previous={3} submitForm={saveRaci} /> */}
               <br />
               <br />
-              <Footer withPrevious={true} />
+              <Footer
+                withPrevious={true}
+                confirmationHandlerPrevious={() => saveConfirmation(false)}
+                confirmationHandlerNext={() => saveConfirmation(true)}
+                saveHandler={saveRaci}
+              />
             </form>
           </Spin>
         </Wrapper>

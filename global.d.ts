@@ -201,7 +201,7 @@ type ProjectStakeholder = {
 };
 
 type ProjectRaciDeliverable1 = {
-  project_raci_deliverable_id: string;
+  key: string; // using project_raci_deliverable_id as key
   project_raci_deliverable_name: string;
   project_raci_responsible_stakeholder_ids: string[];
   project_raci_accountable_stakeholder_ids: string[];
