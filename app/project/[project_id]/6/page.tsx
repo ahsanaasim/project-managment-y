@@ -17,7 +17,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "@/app/firebase";
-import useProjectRef from "@/app/hooks/useProject";
+import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
 import { useRouter } from "next/navigation";
 import { updateDoc } from "firebase/firestore";
@@ -27,6 +27,8 @@ import Navbar from "@/app/components/Navbar";
 import { DeleteOutlined, FileOutlined } from "@ant-design/icons";
 import FirebaseStorage from "firebase/storage";
 import Footer from "@/app/components/Footer";
+import useProject from "@/app/hooks/useProject";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -36,8 +38,10 @@ const Page = () => {
   const [deleting, setDeleting] = useState(false);
   const getUserId = useUserId();
   const getProjectRef = useProjectRef();
+  const getProject = useProject();
   const projectId = useProjectId();
   const router = useRouter();
+  const showConfirm = useNextConfirmation();
 
   useEffect(() => {
     setDocuments(project.project_documents);
@@ -108,6 +112,18 @@ const Page = () => {
     message.success("File deleted");
   };
 
+  const saveConfirmation = async (isNext: boolean) => {
+    const goingTo = isNext ? 6 : 4;
+    const projectInDB = (await getProject(projectId)) as Project;
+
+    if (
+      JSON.stringify(projectInDB.project_documents) !==
+      JSON.stringify(documents)
+    ) {
+      showConfirm(projectId, goingTo);
+    } else router.push(`/project/${projectId}/${goingTo}`);
+  };
+
   return (
     <Row>
       <Col span={4}>
@@ -152,7 +168,12 @@ const Page = () => {
                 {/* <ProjectFlowFooter previous={5} submitForm={uploadDocuments} /> */}
                 <br />
                 <br />
-                <Footer withPrevious />
+                <Footer
+                  saveHandler={uploadDocuments}
+                  confirmationHandlerNext={() => saveConfirmation(true)}
+                  confirmationHandlerPrevious={() => saveConfirmation(false)}
+                  withPrevious
+                />
               </form>
             </Spin>
           </Spin>
