@@ -13,13 +13,15 @@ import { signOut } from "firebase/auth";
 import React, { FormEventHandler } from "react";
 import Wrapper from "../Wrapper";
 import { useAppContext } from "@/app/context/AppProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ExclamationCircleFilled, SettingFilled } from "@ant-design/icons";
 import Link from "next/link";
 
 const TopMenu = () => {
   const { user } = useAppContext();
   const router = useRouter();
+  const path = usePathname();
+  console.log(path);
 
   const logout: FormEventHandler = async () => {
     await signOut(auth);
@@ -75,51 +77,42 @@ const TopMenu = () => {
           <Typography.Title style={{ margin: 0 }} level={3}>
             Project Management
           </Typography.Title>
-          <div>
-            {/* {(user != null) ? <Button href="/auth/login">Login</Button> : <Button type="primary" onClick={logout}>Logout</Button>} */}
-            {/* {!user ? (
-              <Button type="primary" href="/auth/login">
-                Login
-              </Button>
-            ) : (
-              <Button type="primary" onClick={logout}>
-                Logout
-              </Button>
-            )} */}
-
-            <Dropdown
-              menu={{
-                items: [
-                  ...items,
-                  !user
-                    ? {
-                        key: "4",
-                        label: <Link href="/auth/login">Login</Link>,
-                      }
-                    : {
-                        key: "4",
-                        label: (
-                          <Link onClick={confirmSignout} href="#">
-                            Sign Out
-                          </Link>
-                        ),
-                      },
-                ],
-              }}
-            >
-              <a onClick={(e) => e.preventDefault()}>
-                <Space>
-                  <SettingFilled
-                    style={{
-                      fontSize: "1.5rem",
-                      marginLeft: "1rem",
-                      cursor: "pointer",
-                    }}
-                  />
-                </Space>
-              </a>
-            </Dropdown>
-          </div>
+          {!["/auth", "/auth/login", "/auth/signup"].includes(path) && (
+            <div>
+              <Dropdown
+                menu={{
+                  items: [
+                    ...items,
+                    !user
+                      ? {
+                          key: "4",
+                          label: <Link href="/auth/login">Login</Link>,
+                        }
+                      : {
+                          key: "4",
+                          label: (
+                            <Link onClick={confirmSignout} href="#">
+                              Sign Out
+                            </Link>
+                          ),
+                        },
+                  ],
+                }}
+              >
+                <a onClick={(e) => e.preventDefault()}>
+                  <Space>
+                    <SettingFilled
+                      style={{
+                        fontSize: "1.5rem",
+                        marginLeft: "1rem",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Space>
+                </a>
+              </Dropdown>
+            </div>
+          )}
         </div>
       </Wrapper>
       <Divider />
