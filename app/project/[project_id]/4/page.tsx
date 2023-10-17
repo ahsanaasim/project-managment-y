@@ -257,93 +257,95 @@ const Page = () => {
               </Space>
             </ul>
             <form>
-              <Table
-                dataSource={data}
-                style={{
-                  marginTop: "2rem",
-                  maxHeight: "500px",
-                  overflowY: "scroll",
-                }}
-                pagination={false}
-              >
-                <Table.Column
-                  title="Deliverable"
-                  dataIndex="project_raci_deliverable"
-                  key="project_raci_deliverable"
-                  render={(rowData, record: { key: string }, index) => (
-                    // <Input
-                    //   value={rowData}
-                    //   onChange={(e) =>
-                    //     changeDeliverable(record.key, e.target.value)
-                    //   }
-                    // />
-                    <ScrollInput
-                      name="deliverable"
-                      value={rowData}
-                      onChange={(e) =>
-                        changeDeliverable(record.key, e.target.value)
-                      }
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Responsible"
-                  dataIndex="project_raci_responsible_stakeholder_ids"
-                  key="project_raci_responsible_stakeholder_ids"
-                  render={(rowData, record: { key: string }, index) =>
-                    renderStakeholders(
-                      rowData,
-                      record.key,
-                      "project_raci_responsible_stakeholder_ids"
-                    )
-                  }
-                />
-                <Table.Column
-                  title="Accountable"
-                  dataIndex="project_raci_accountable_stakeholder_ids"
-                  key="project_raci_accountable_stakeholder_ids"
-                  render={(rowData, record: { key: string }, index) =>
-                    renderStakeholders(
-                      rowData,
-                      record.key,
-                      "project_raci_accountable_stakeholder_ids"
-                    )
-                  }
-                />
-                <Table.Column
-                  title="Consulted"
-                  dataIndex="project_raci_consulted_stakeholder_ids"
-                  key="project_raci_consulted_stakeholder_ids"
-                  render={(rowData, record: { key: string }, index) =>
-                    renderStakeholders(
-                      rowData,
-                      record.key,
-                      "project_raci_consulted_stakeholder_ids"
-                    )
-                  }
-                />
-                <Table.Column
-                  title="Informed"
-                  dataIndex="project_raci_informed_stakeholder_ids"
-                  key="project_raci_informed_stakeholder_ids"
-                  render={(rowData, record: { key: string }, index) =>
-                    renderStakeholders(
-                      rowData,
-                      record.key,
-                      "project_raci_informed_stakeholder_ids"
-                    )
-                  }
-                />
-                <Table.Column
-                  render={(rowData, record: { key: string }, index) => (
-                    <Button
-                      onClick={() => deleteRow(record.key)}
-                      icon={<MinusCircleOutlined />}
-                      danger
-                    ></Button>
-                  )}
-                />
-              </Table>
+              {data.length !== 0 && (
+                <Table
+                  dataSource={data}
+                  style={{
+                    marginTop: "2rem",
+                    maxHeight: "500px",
+                    overflowY: "scroll",
+                  }}
+                  pagination={false}
+                >
+                  <Table.Column
+                    title="Deliverable"
+                    dataIndex="project_raci_deliverable"
+                    key="project_raci_deliverable"
+                    render={(rowData, record: { key: string }, index) => (
+                      // <Input
+                      //   value={rowData}
+                      //   onChange={(e) =>
+                      //     changeDeliverable(record.key, e.target.value)
+                      //   }
+                      // />
+                      <ScrollInput
+                        name="deliverable"
+                        value={rowData}
+                        onChange={(e) =>
+                          changeDeliverable(record.key, e.target.value)
+                        }
+                      />
+                    )}
+                  />
+                  <Table.Column
+                    title="Responsible"
+                    dataIndex="project_raci_responsible_stakeholder_ids"
+                    key="project_raci_responsible_stakeholder_ids"
+                    render={(rowData, record: { key: string }, index) =>
+                      renderStakeholders(
+                        rowData,
+                        record.key,
+                        "project_raci_responsible_stakeholder_ids"
+                      )
+                    }
+                  />
+                  <Table.Column
+                    title="Accountable"
+                    dataIndex="project_raci_accountable_stakeholder_ids"
+                    key="project_raci_accountable_stakeholder_ids"
+                    render={(rowData, record: { key: string }, index) =>
+                      renderStakeholders(
+                        rowData,
+                        record.key,
+                        "project_raci_accountable_stakeholder_ids"
+                      )
+                    }
+                  />
+                  <Table.Column
+                    title="Consulted"
+                    dataIndex="project_raci_consulted_stakeholder_ids"
+                    key="project_raci_consulted_stakeholder_ids"
+                    render={(rowData, record: { key: string }, index) =>
+                      renderStakeholders(
+                        rowData,
+                        record.key,
+                        "project_raci_consulted_stakeholder_ids"
+                      )
+                    }
+                  />
+                  <Table.Column
+                    title="Informed"
+                    dataIndex="project_raci_informed_stakeholder_ids"
+                    key="project_raci_informed_stakeholder_ids"
+                    render={(rowData, record: { key: string }, index) =>
+                      renderStakeholders(
+                        rowData,
+                        record.key,
+                        "project_raci_informed_stakeholder_ids"
+                      )
+                    }
+                  />
+                  <Table.Column
+                    render={(rowData, record: { key: string }, index) => (
+                      <Button
+                        onClick={() => deleteRow(record.key)}
+                        icon={<MinusCircleOutlined />}
+                        danger
+                      ></Button>
+                    )}
+                  />
+                </Table>
+              )}
               <br />
               <br />
               <AddRowButton addRow={addRow} />

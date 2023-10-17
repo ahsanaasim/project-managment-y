@@ -22,9 +22,7 @@ import {
   MinusCircleOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import ProjectFlowFooter from "../ProjectFlowFooter";
 import { useProjectContext } from "@/app/context/ProjectProvider";
-import { table } from "console";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
 import useProjectRef from "@/app/hooks/useProjectRef";
 import useProjectId from "@/app/hooks/useProjectId";
@@ -264,12 +262,14 @@ const Page = () => {
     column: string,
     value: string
   ) => {
+    console.log("working..", value);
+
     setTableData([
-      ...tableData.map((table) => {
+      ...tableData.map((table): ProjectWorkingGroup => {
         if (table.project_wg_id == tableKey) {
           return {
             ...table,
-            project_working_group_item: [
+            project_wg_item: [
               ...table.project_wg_item.map((row) => {
                 if (row.key == rowKey) {
                   return { ...row, [column]: value };

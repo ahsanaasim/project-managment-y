@@ -19,9 +19,9 @@ const Page = () => {
   const [recommendationsGeneral, setRecommendationsGeneral] = useState(
     project.project_recommendations_general
   );
-  const [tableData, setTableData] = useState<
-    ProjectRecommendationsStakeholder[]
-  >(project.project_recommendations_stakeholder);
+  const [tableData, setTableData] = useState(
+    project.project_recommendations_stakeholder
+  );
   const [updatingProject, setUpdatingProject] = useState(false);
   const getProjectRef = useProjectRef();
   const getProject = useProject();
@@ -47,13 +47,13 @@ const Page = () => {
   const saveRecommendations: FormEventHandler = async (e) => {
     e.preventDefault();
     setUpdatingProject(true);
-    console.log(recommendationsGeneral, tableData);
 
     const projectDocRef = await getProjectRef(projectId);
+    console.log(tableData);
 
     await updateDoc(projectDocRef, {
       project_recommendations_general: recommendationsGeneral,
-      project_recommendations_stakeholder: tableData,
+      project_recommendations_stakeholder: [...tableData],
     });
 
     setProject({
