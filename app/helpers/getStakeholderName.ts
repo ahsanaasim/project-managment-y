@@ -1,5 +1,3 @@
-import { Project } from "@/global";
-
 const getStakeholderName = (id: string, project: Project) => {
   return project.project_stakeholders.filter(
     (stakeholder) => stakeholder.project_stakeholder_id == id

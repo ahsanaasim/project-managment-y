@@ -23,6 +23,7 @@ const projectState = {
   project_working_groups: [],
   project_documents: [],
   project_recommendations_general: "",
+  project_recommendations_stakeholder: [],
   status_updates: [],
 };
 

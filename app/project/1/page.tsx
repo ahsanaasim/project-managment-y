@@ -23,7 +23,6 @@ import FullpageLoader from "@/app/components/FullpageLoader";
 import { useRouter } from "next/navigation";
 import getCompanies from "@/app/helpers/getCompanies";
 import getCompaniesCount from "@/app/helpers/getCompaniesCount";
-import useGetProjects from "@/app/hooks/useGetProjects";
 import useProjects from "@/app/hooks/useProjects";
 
 const Page = () => {
@@ -51,7 +50,7 @@ const Page = () => {
         const projects = company.projects;
 
         if (tempUser.user_email == user.email) {
-          const newProject = {
+          const newProject: Project = {
             project_id: nanoid(),
             project_name: name,
             project_overview: "",
@@ -66,6 +65,7 @@ const Page = () => {
             project_working_groups: [],
             project_documents: [],
             project_recommendations_general: "",
+            project_recommendations_stakeholder: [],
             status_updates: [],
           };
           projects.push(newProject);
