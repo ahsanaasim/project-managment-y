@@ -179,6 +179,7 @@ type ProjectWgItem1 = {
 };
 
 type ProjectRecommendationsStakeholder = {
+  key: string;
   project_stakeholder_id: string;
   project_raci_deliverables: ProjectRaciDeliverable2[];
   project_wg_items: ProjectWgItem2[];
@@ -234,6 +235,7 @@ type Project = {
   project_working_groups: ProjectWorkingGroup[];
   project_documents: string[];
   project_recommendations_general: string;
+  project_recommendations_stakeholder: ProjectRecommendationsStakeholder[];
   status_updates: StatusUpdate[];
 };
 

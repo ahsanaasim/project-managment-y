@@ -351,7 +351,6 @@ const Page = () => {
               <br />
               <br />
               <Footer
-                withPrevious={true}
                 confirmationHandlerPrevious={() => saveConfirmation(false)}
                 confirmationHandlerNext={() => saveConfirmation(true)}
                 saveHandler={saveRaci}

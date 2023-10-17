@@ -536,7 +536,6 @@ const Page = () => {
                   saveHandler={saveWorkingGroups}
                   confirmationHandlerNext={() => saveConfirmation(true)}
                   confirmationHandlerPrevious={() => saveConfirmation(false)}
-                  withPrevious
                 />
               </form>
             </div>

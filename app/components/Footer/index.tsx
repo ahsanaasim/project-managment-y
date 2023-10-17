@@ -3,20 +3,22 @@ import { Button, Space } from "antd";
 import React from "react";
 
 const Footer = ({
-  withPrevious,
+  withoutPrevious,
+  withoutNext,
   saveHandler,
   confirmationHandlerPrevious,
   confirmationHandlerNext,
 }: {
-  withPrevious?: boolean;
+  withoutPrevious?: boolean;
+  withoutNext?: boolean;
   saveHandler: React.FormEventHandler;
   confirmationHandlerPrevious?: () => Promise<void>;
-  confirmationHandlerNext: () => Promise<void>;
+  confirmationHandlerNext?: () => Promise<void>;
 }) => {
   return (
     <footer>
       <Space>
-        {withPrevious && (
+        {!withoutPrevious && (
           <Button
             onClick={() => {
               confirmationHandlerPrevious && confirmationHandlerPrevious();
@@ -27,10 +29,12 @@ const Footer = ({
         <Button type="primary" onClick={saveHandler}>
           Save
         </Button>
-        <Button
-          icon={<RightOutlined />}
-          onClick={() => confirmationHandlerNext()}
-        ></Button>
+        {!withoutNext && (
+          <Button
+            icon={<RightOutlined />}
+            onClick={() => confirmationHandlerNext && confirmationHandlerNext()}
+          ></Button>
+        )}
       </Space>
     </footer>
   );

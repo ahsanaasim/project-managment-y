@@ -108,17 +108,23 @@ const Page = () => {
       project_documents: [...newList],
     });
 
+    setDocuments([...newList]);
+
     setDeleting(false);
     message.success("File deleted");
   };
 
   const saveConfirmation = async (isNext: boolean) => {
-    const goingTo = isNext ? 6 : 4;
+    console.log("rungionon");
+
+    const goingTo = isNext ? 7 : 5;
     const projectInDB = (await getProject(projectId)) as Project;
 
     if (
       JSON.stringify(projectInDB.project_documents) !==
-      JSON.stringify(documents)
+        JSON.stringify(documents) ||
+      documents.length + (fileList ? fileList.length : 0) !==
+        projectInDB.project_documents.length
     ) {
       showConfirm(projectId, goingTo);
     } else router.push(`/project/${projectId}/${goingTo}`);
@@ -172,7 +178,6 @@ const Page = () => {
                   saveHandler={uploadDocuments}
                   confirmationHandlerNext={() => saveConfirmation(true)}
                   confirmationHandlerPrevious={() => saveConfirmation(false)}
-                  withPrevious
                 />
               </form>
             </Spin>

@@ -1,17 +1,12 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Col, Input, Modal, Row, Space, Spin, Typography } from "antd";
-import React, { FormEvent, FormEventHandler, useEffect, useState } from "react";
+import { Button, Col, Input, Row, Space, Spin, Typography } from "antd";
+import React, { FormEventHandler, useEffect, useState } from "react";
 import { nanoid } from "nanoid";
-import {
-  ExclamationCircleFilled,
-  MinusCircleOutlined,
-  PlusCircleOutlined,
-} from "@ant-design/icons";
-import ProjectFlowFooter from "../ProjectFlowFooter";
+import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import useProjectRef from "@/app/hooks/useProjectRef";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import useProjectId from "@/app/hooks/useProjectId";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
@@ -260,9 +255,9 @@ const Page = () => {
                       <Col span={8}>
                         <label htmlFor="outcome">Stakeholder Name</label>
                       </Col>
-                      <Col span={8}>
+                      {/* <Col span={8}>
                         <label htmlFor="metric">Role</label>
-                      </Col>
+                      </Col> */}
                       <Col span={8}>
                         <label htmlFor="metric">Email Address</label>
                       </Col>
@@ -283,7 +278,7 @@ const Page = () => {
                             id="stakeholder-name"
                           />
                         </Col>
-                        <Col span={8}>
+                        {/* <Col span={8}>
                           <Input
                             value={stakeHolder.project_stakeholder_role}
                             onChange={(e) =>
@@ -296,7 +291,7 @@ const Page = () => {
                             name="role"
                             id="role"
                           />
-                        </Col>
+                        </Col>` */}
                         <Col span={8}>
                           <div style={{ display: "flex", gap: 20 }}>
                             <Input
@@ -339,7 +334,6 @@ const Page = () => {
                   saveHandler={saveStakeholders}
                   confirmationHandlerPrevious={() => saveConfirmation(false)}
                   confirmationHandlerNext={() => saveConfirmation(true)}
-                  withPrevious={true}
                 />
               </Space>
               {/* <ProjectFlowFooter previous={2} submitForm={saveStakeholders} /> */}
