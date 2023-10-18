@@ -1,6 +1,6 @@
 import { Menu, MenuProps } from "antd";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function getItem(
   label: React.ReactNode,
@@ -20,10 +20,10 @@ type MenuItem = Required<MenuProps>["items"][number];
 
 const items: MenuItem[] = [
   getItem("Info", "1"),
-  getItem("Details", "2"),
+  getItem("Other Details", "2"),
   getItem("Stakeholders", "3"),
-  getItem("RACI", "4"),
-  getItem("Working Groups", "5"),
+  getItem("RACI Stakeholders", "4"),
+  getItem("Working Groups Stakeholders", "5"),
   getItem("Documents", "6"),
   getItem("Recommendations", "7"),
 ];

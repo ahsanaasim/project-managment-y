@@ -3,7 +3,7 @@ import React, { FormEventHandler, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Space, Typography, message } from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/app/firebase";
+import { auth } from "@/app/firebase";
 import { FirebaseError } from "firebase/app";
 import { useRouter } from "next/navigation";
 import useGoogleSignIn from "@/app/helpers/googleSignIn";

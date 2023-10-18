@@ -3,29 +3,6 @@ import { DocumentData } from "firebase/firestore";
 import Link from "next/link";
 import React from "react";
 
-// const projects = [
-//   {
-//     "name":"project 1",
-//     "link":"/project/project-1"
-//   },
-//   {
-//     "name":"project 2",
-//     "link":"/project/project-1"
-//   },
-//   {
-//     "name":"project 3",
-//     "link":"/project/project-1"
-//   },
-//   {
-//     "name":"project 4",
-//     "link":"/project/project-1"
-//   },
-//   {
-//     "name":"project 5",
-//     "link":"/project/project-1"
-//   },
-// ]
-
 const ProjectList = ({
   projects,
   fetchingProjects,
@@ -33,6 +10,8 @@ const ProjectList = ({
   projects: DocumentData[];
   fetchingProjects: boolean;
 }) => {
+  console.log(projects);
+
   return (
     <div>
       <Typography.Title level={3}>My Projects</Typography.Title>

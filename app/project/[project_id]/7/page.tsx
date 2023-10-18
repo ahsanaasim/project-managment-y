@@ -1,12 +1,14 @@
 "use client";
+import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
 import Wrapper from "@/app/components/Wrapper";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import getStakeholderName from "@/app/helpers/getStakeholderName";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
+import useProject from "@/app/hooks/useProject";
 import useProjectId from "@/app/hooks/useProjectId";
 import useProjectRef from "@/app/hooks/useProjectRef";
-import { recommendationsStakeholder } from "@/global";
 import { Button, Col, Input, Row, Space, Spin, Table, Typography } from "antd";
 import { updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -17,13 +19,15 @@ const Page = () => {
   const [recommendationsGeneral, setRecommendationsGeneral] = useState(
     project.project_recommendations_general
   );
-  const [tableData, setTableData] = useState<recommendationsStakeholder[]>(
+  const [tableData, setTableData] = useState(
     project.project_recommendations_stakeholder
   );
   const [updatingProject, setUpdatingProject] = useState(false);
   const getProjectRef = useProjectRef();
+  const getProject = useProject();
   const projectId = useProjectId();
   const router = useRouter();
+  const showConfirm = useNextConfirmation();
 
   useEffect(() => {
     setRecommendationsGeneral(project.project_recommendations_general);
@@ -43,13 +47,13 @@ const Page = () => {
   const saveRecommendations: FormEventHandler = async (e) => {
     e.preventDefault();
     setUpdatingProject(true);
-    console.log(recommendationsGeneral, tableData);
 
     const projectDocRef = await getProjectRef(projectId);
+    console.log(tableData);
 
     await updateDoc(projectDocRef, {
       project_recommendations_general: recommendationsGeneral,
-      project_recommendations_stakeholder: tableData,
+      project_recommendations_stakeholder: [...tableData],
     });
 
     setProject({
@@ -59,6 +63,21 @@ const Page = () => {
     });
 
     router.push(`/project/1`);
+  };
+
+  const saveConfirmation = async (isNext: boolean) => {
+    console.log("rungionon");
+
+    const goingTo = isNext ? 7 : 5;
+    const projectInDB = (await getProject(projectId)) as Project;
+
+    if (
+      projectInDB.project_recommendations_general !== recommendationsGeneral ||
+      JSON.stringify(projectInDB.project_recommendations_stakeholder) !==
+        JSON.stringify(tableData)
+    ) {
+      showConfirm(projectId, goingTo);
+    } else router.push(`/project/${projectId}/${goingTo}`);
   };
 
   return (
@@ -151,7 +170,7 @@ const Page = () => {
                   render={() => <Button type="link">Send</Button>}
                 />
               </Table>
-              <Space
+              {/* <Space
                 style={{
                   margin: "2rem 0",
                   display: "flex",
@@ -175,7 +194,14 @@ const Page = () => {
                 >
                   Next
                 </Button>
-              </Space>
+              </Space> */}
+              <br />
+              <br />
+              <Footer
+                saveHandler={saveRecommendations}
+                confirmationHandlerPrevious={() => saveConfirmation(false)}
+                withoutNext
+              />
             </form>
           </Spin>
         </Wrapper>

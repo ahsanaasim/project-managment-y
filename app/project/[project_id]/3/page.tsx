@@ -1,35 +1,42 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
 import { Button, Col, Input, Row, Space, Spin, Typography } from "antd";
-import React, { FormEvent, FormEventHandler, useEffect, useState } from "react";
+import React, { FormEventHandler, useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import ProjectFlowFooter from "../ProjectFlowFooter";
 import { useProjectContext } from "@/app/context/ProjectProvider";
-import { OutcomeMetric, Stakeholder } from "@/global";
 import useProjectRef from "@/app/hooks/useProjectRef";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import useProjectId from "@/app/hooks/useProjectId";
 import { updateDoc } from "firebase/firestore";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
+import Footer from "@/app/components/Footer";
+import useProject from "@/app/hooks/useProject";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
   const [budget, setBudget] = useState("");
-  const [outcomes, setOutcomes] = useState<OutcomeMetric[]>(
+  const [outcomes, setOutcomes] = useState<ProjectOutcomesAndMetric[]>(
     project.project_outcomes_and_metrics
   );
-  const [stakeHolders, setStakeHolders] = useState<Stakeholder[]>(
+  const [stakeHolders, setStakeHolders] = useState<ProjectStakeholder[]>(
     project.project_stakeholders
   );
   const [updatingProject, setUpdatingProject] = useState(false);
   const getProjectRef = useProjectRef();
+  const getProject = useProject();
   const projectId = useProjectId();
   const router = useRouter();
+  const showConfirm = useNextConfirmation();
 
   const removeField = (id: string) => {
-    setOutcomes([...outcomes.filter((outcome) => outcome.item_id != id)]);
+    setOutcomes([
+      ...outcomes.filter(
+        (outcome) => outcome.project_outcomes_and_metrics_id != id
+      ),
+    ]);
   };
 
   const addField = () => {
@@ -38,7 +45,7 @@ const Page = () => {
       {
         project_outcome: "",
         project_metric: "",
-        item_id: nanoid(),
+        project_outcomes_and_metrics_id: nanoid(),
       },
     ]);
   };
@@ -56,9 +63,11 @@ const Page = () => {
       ...stakeHolders,
       {
         project_stakeholder_id: nanoid(),
-        project_stakeholder_name: "",
-        project_stakeholder_role: "",
+        user_id: "",
+        stakeholder_role_id: [],
         project_stakeholder_email: "",
+        project_stakeholder_name: "",
+        project_recommendations_stakeholder: [],
       },
     ]);
   };
@@ -72,7 +81,7 @@ const Page = () => {
   const changeOutcomeMetric = (id: string, value: string, key: string) => {
     setOutcomes([
       ...outcomes.map((outcome) => {
-        if (outcome.item_id == id) {
+        if (outcome.project_outcomes_and_metrics_id == id) {
           return { ...outcome, [key]: value };
         } else return { ...outcome };
       }),
@@ -119,7 +128,7 @@ const Page = () => {
       project_budget: budget,
       project_outcomes_and_metrics: outcomes,
       project_stakeholders: finalStakeholders,
-      project_recommendations_stakeholder,
+      // project_recommendations_stakeholder,
     });
 
     setProject({
@@ -127,10 +136,29 @@ const Page = () => {
       project_budget: budget,
       project_outcomes_and_metrics: outcomes,
       project_stakeholders: finalStakeholders,
-      project_recommendations_stakeholder,
+      // project_recommendations_stakeholder,
     });
 
     router.push(`/project/${projectId}/4`);
+  };
+
+  const saveConfirmation = async (isNext: boolean) => {
+    const goingTo = isNext ? 4 : 2;
+    const projectInDB = await getProject(projectId);
+    const {
+      project_budget,
+      project_outcomes_and_metrics,
+      project_stakeholders,
+    } = projectInDB as Project;
+
+    if (
+      project_budget !== budget ||
+      JSON.stringify(project_outcomes_and_metrics) !==
+        JSON.stringify(outcomes) ||
+      JSON.stringify(project_stakeholders) !== JSON.stringify(stakeHolders)
+    ) {
+      showConfirm(projectId, goingTo);
+    } else router.push(`/project/${projectId}/${goingTo}`);
   };
 
   return (
@@ -159,166 +187,156 @@ const Page = () => {
                   />
                 </Space>
                 {/* 2nd section */}
-                <Row gutter={20}>
-                  <Col span={12}>
-                    <label htmlFor="outcome">Outcome</label>
-                  </Col>
-                  <Col span={12}>
-                    <label htmlFor="metric">Metric</label>
-                  </Col>
-                </Row>
-                {outcomes.map((outcome, index) => (
-                  <Row key={index} gutter={20}>
-                    <Col span={12}>
-                      {/* <Input
-                        value={outcome.project_outcome}
-                        onChange={(e) =>
-                          changeOutcomeMetric(
-                            outcome.item_id,
-                            e.target.value,
-                            "project_outcome"
-                          )
-                        }
-                        name="outcome"
-                        id="outcome"
-                      /> */}
-
-                      <ScrollInput
-                        value={outcome.project_outcome}
-                        onChange={(e) =>
-                          changeOutcomeMetric(
-                            outcome.item_id,
-                            e.target.value,
-                            "project_outcome"
-                          )
-                        }
-                        name="outcome"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <div style={{ display: "flex", gap: 20 }}>
-                        {/* <Input
-                          value={outcome.project_metric}
-                          onChange={(e) =>
-                            changeOutcomeMetric(
-                              outcome.item_id,
-                              e.target.value,
-                              "project_metric"
-                            )
-                          }
-                          style={{ width: "100%" }}
-                          name="metric"
-                          id="metric"
-                        /> */}
-
-                        <ScrollInput
-                          value={outcome.project_metric}
-                          onChange={(e) =>
-                            changeOutcomeMetric(
-                              outcome.item_id,
-                              e.target.value,
-                              "project_metric"
-                            )
-                          }
-                          // style={{ width: "100%" }}
-                          name="metric"
-                        />
-                        <Button
-                          onClick={() => removeField(outcome.item_id)}
-                          icon={<MinusCircleOutlined />}
-                          danger
-                        ></Button>
-                      </div>
-                    </Col>
-                  </Row>
-                ))}
+                {outcomes.length !== 0 && (
+                  <>
+                    <Row gutter={20}>
+                      <Col span={12}>
+                        <label htmlFor="outcome">Outcome</label>
+                      </Col>
+                      <Col span={12}>
+                        <label htmlFor="metric">Metric</label>
+                      </Col>
+                    </Row>
+                    {outcomes.map((outcome, index) => (
+                      <Row key={index} gutter={20}>
+                        <Col span={12}>
+                          <ScrollInput
+                            value={outcome.project_outcome}
+                            onChange={(e) =>
+                              changeOutcomeMetric(
+                                outcome.project_outcomes_and_metrics_id,
+                                e.target.value,
+                                "project_outcome"
+                              )
+                            }
+                            name="outcome"
+                          />
+                        </Col>
+                        <Col span={12}>
+                          <div style={{ display: "flex", gap: 20 }}>
+                            <ScrollInput
+                              value={outcome.project_metric}
+                              onChange={(e) =>
+                                changeOutcomeMetric(
+                                  outcome.project_outcomes_and_metrics_id,
+                                  e.target.value,
+                                  "project_metric"
+                                )
+                              }
+                              // style={{ width: "100%" }}
+                              name="metric"
+                            />
+                            <Button
+                              onClick={() =>
+                                removeField(
+                                  outcome.project_outcomes_and_metrics_id
+                                )
+                              }
+                              icon={<MinusCircleOutlined />}
+                              danger
+                            ></Button>
+                          </div>
+                        </Col>
+                      </Row>
+                    ))}
+                  </>
+                )}
                 <Button
                   type="primary"
                   onClick={addField}
                   icon={<PlusCircleOutlined />}
                 >
-                  Add Field
+                  Add New Outcome and Metric
                 </Button>
                 {/* 3rd section */}
-                <Row gutter={20}>
-                  <Col span={8}>
-                    <label htmlFor="outcome">Stakeholders</label>
-                  </Col>
-                  <Col span={8}>
-                    <label htmlFor="metric">Role</label>
-                  </Col>
-                  <Col span={8}>
-                    <label htmlFor="metric">Email Address</label>
-                  </Col>
-                </Row>
-                {stakeHolders.map((stakeHolder, index) => (
-                  <Row key={index} gutter={20}>
-                    <Col span={8}>
-                      <Input
-                        value={stakeHolder.project_stakeholder_name}
-                        onChange={(e) =>
-                          changeStakeholders(
-                            stakeHolder.project_stakeholder_id,
-                            e.target.value,
-                            "project_stakeholder_name"
-                          )
-                        }
-                        name="stakeholder-name"
-                        id="stakeholder-name"
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <Input
-                        value={stakeHolder.project_stakeholder_role}
-                        onChange={(e) =>
-                          changeStakeholders(
-                            stakeHolder.project_stakeholder_id,
-                            e.target.value,
-                            "project_stakeholder_role"
-                          )
-                        }
-                        name="role"
-                        id="role"
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <div style={{ display: "flex", gap: 20 }}>
-                        <Input
-                          value={stakeHolder.project_stakeholder_email}
-                          onChange={(e) =>
-                            changeStakeholders(
-                              stakeHolder.project_stakeholder_id,
-                              e.target.value,
-                              "project_stakeholder_email"
-                            )
-                          }
-                          style={{ width: "100%" }}
-                          type="email"
-                          name="email"
-                          id="email"
-                        />
-                        <Button
-                          onClick={() =>
-                            removeStakeholderField(
-                              stakeHolder.project_stakeholder_id
-                            )
-                          }
-                          icon={<MinusCircleOutlined />}
-                          danger
-                        ></Button>
-                      </div>
-                    </Col>
-                  </Row>
-                ))}
+                {stakeHolders.length !== 0 && (
+                  <>
+                    <Row gutter={20}>
+                      <Col span={8}>
+                        <label htmlFor="outcome">Stakeholder Name</label>
+                      </Col>
+                      {/* <Col span={8}>
+                        <label htmlFor="metric">Role</label>
+                      </Col> */}
+                      <Col span={8}>
+                        <label htmlFor="metric">Email Address</label>
+                      </Col>
+                    </Row>
+                    {stakeHolders.map((stakeHolder, index) => (
+                      <Row key={index} gutter={20}>
+                        <Col span={8}>
+                          <Input
+                            value={stakeHolder.project_stakeholder_name}
+                            onChange={(e) =>
+                              changeStakeholders(
+                                stakeHolder.project_stakeholder_id,
+                                e.target.value,
+                                "project_stakeholder_name"
+                              )
+                            }
+                            name="stakeholder-name"
+                            id="stakeholder-name"
+                          />
+                        </Col>
+                        {/* <Col span={8}>
+                          <Input
+                            value={stakeHolder.project_stakeholder_role}
+                            onChange={(e) =>
+                              changeStakeholders(
+                                stakeHolder.project_stakeholder_id,
+                                e.target.value,
+                                "project_stakeholder_role"
+                              )
+                            }
+                            name="role"
+                            id="role"
+                          />
+                        </Col>` */}
+                        <Col span={8}>
+                          <div style={{ display: "flex", gap: 20 }}>
+                            <Input
+                              value={stakeHolder.project_stakeholder_email}
+                              onChange={(e) =>
+                                changeStakeholders(
+                                  stakeHolder.project_stakeholder_id,
+                                  e.target.value,
+                                  "project_stakeholder_email"
+                                )
+                              }
+                              style={{ width: "100%" }}
+                              type="email"
+                              name="email"
+                              id="email"
+                            />
+                            <Button
+                              onClick={() =>
+                                removeStakeholderField(
+                                  stakeHolder.project_stakeholder_id
+                                )
+                              }
+                              icon={<MinusCircleOutlined />}
+                              danger
+                            ></Button>
+                          </div>
+                        </Col>
+                      </Row>
+                    ))}
+                  </>
+                )}
                 <Button
                   type="primary"
                   onClick={addStakeholderField}
                   icon={<PlusCircleOutlined />}
                 >
-                  Add Stakeholder
+                  Add New Stakeholder
                 </Button>
+                <Footer
+                  saveHandler={saveStakeholders}
+                  confirmationHandlerPrevious={() => saveConfirmation(false)}
+                  confirmationHandlerNext={() => saveConfirmation(true)}
+                />
               </Space>
-              <ProjectFlowFooter previous={2} submitForm={saveStakeholders} />
+              {/* <ProjectFlowFooter previous={2} submitForm={saveStakeholders} /> */}
             </form>
           </Spin>
         </Wrapper>

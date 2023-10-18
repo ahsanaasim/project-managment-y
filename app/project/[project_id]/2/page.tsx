@@ -1,13 +1,17 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Col, Input, Row, Space, Spin, Typography } from "antd";
-import { getDoc, updateDoc } from "firebase/firestore";
+import { Col, Input, Modal, Row, Space, Spin, Typography, message } from "antd";
+import { updateDoc } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import useProjectRef from "@/app/hooks/useProjectRef";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import Navbar from "@/app/components/Navbar";
 import ScrollInput from "@/app/components/ScrollInput";
+import Footer from "@/app/components/Footer";
+import useProject from "@/app/hooks/useProject";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -17,18 +21,35 @@ const Page = () => {
   const [scope, setScope] = useState(project.project_scope);
   const [projectLink, setProjectLink] = useState(project.project_link_to_plan);
   const [updatingProject, setUpdatingProject] = useState(false);
-  const getProjectRef = useProjectRef();
   const path = usePathname();
   const router = useRouter();
   const projectId = path.split("/")[2];
+  const getProjectRef = useProjectRef();
+  const getProject = useProject();
+  const showConfirm = useNextConfirmation();
+
+  // const showConfirm = () => {
+  //   const { confirm } = Modal;
+
+  //   confirm({
+  //     title: "You have unsaved changes.",
+  //     icon: <ExclamationCircleFilled />,
+  //     // content: 'Some descriptions',
+  //     okText: "Continue without Saving",
+  //     cancelText: "Cancel",
+  //     onOk() {
+  //       router.push(`/project/${projectId}/3`);
+  //     },
+  //   });
+  // };
 
   const createProjectDetails: FormEventHandler = async (e) => {
     e.preventDefault();
     setUpdatingProject(true);
 
-    const projectDocRef = await getProjectRef(projectId);
+    const projectRef = await getProjectRef(projectId);
 
-    await updateDoc(projectDocRef, {
+    await updateDoc(projectRef, {
       project_overview: overview,
       project_problem: problem,
       project_purpose: purpose,
@@ -45,7 +66,34 @@ const Page = () => {
       project_link_to_plan: projectLink,
     });
 
-    router.push(`/project/${projectId}/3`);
+    setUpdatingProject(false);
+    message.success("Changes saved");
+  };
+
+  const saveConfirmation = async () => {
+    console.log("running");
+
+    const projectInDB = await getProject(projectId);
+    const {
+      project_overview,
+      project_problem,
+      project_purpose,
+      project_scope,
+      project_link_to_plan,
+    } = projectInDB as Project;
+
+    console.log("project from db", projectInDB);
+    console.log("project from local", project);
+
+    if (
+      project_overview !== overview ||
+      project_problem !== problem ||
+      project_purpose !== purpose ||
+      project_scope !== scope ||
+      project_link_to_plan !== projectLink
+    ) {
+      showConfirm(projectId, 3);
+    } else router.push(`/project/${projectId}/3`);
   };
 
   useEffect(() => {
@@ -74,12 +122,7 @@ const Page = () => {
                 >
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="overview">Overview</label>
-                    {/* <Input.TextArea
-                      name="overview"
-                      id="overview"
-                      value={overview}
-                      onChange={(e) => setOverview(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="overview"
                       value={overview}
@@ -88,12 +131,7 @@ const Page = () => {
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="problem">Problem</label>
-                    {/* <Input.TextArea
-                      name="problem"
-                      id="problem"
-                      value={problem}
-                      onChange={(e) => setProblem(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="problem"
                       value={problem}
@@ -102,12 +140,7 @@ const Page = () => {
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="purpose">Purpose</label>
-                    {/* <Input.TextArea
-                      name="purpose"
-                      id="purpose"
-                      value={purpose}
-                      onChange={(e) => setPurpose(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="purpose"
                       value={purpose}
@@ -116,12 +149,7 @@ const Page = () => {
                   </Space>
                   <Space direction="vertical" style={{ display: "flex" }}>
                     <label htmlFor="scope">Scope</label>
-                    {/* <Input.TextArea
-                      name="scope"
-                      id="scope"
-                      value={scope}
-                      onChange={(e) => setScope(e.target.value)}
-                    /> */}
+
                     <ScrollInput
                       name="scope"
                       value={scope}
@@ -138,9 +166,13 @@ const Page = () => {
                       onChange={(e) => setProjectLink(e.target.value)}
                     />
                   </Space>
-                  <Button htmlType="submit" type="primary" block>
+                  {/* <Button htmlType="submit" type="primary" block>
                     Next
-                  </Button>
+                  </Button> */}
+                  <Footer
+                    saveHandler={createProjectDetails}
+                    confirmationHandlerNext={saveConfirmation}
+                  />
                 </Space>
               </form>
             </Spin>
