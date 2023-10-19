@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useProjectRef from "../hooks/useProject";
 import { getDoc } from "firebase/firestore";
 import { usePathname } from "next/navigation";
-// import { Project, ProjectContext } from "@/global";
 import { nanoid } from "nanoid";
 import useProject from "../hooks/useProject";
 

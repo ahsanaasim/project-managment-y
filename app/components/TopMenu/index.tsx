@@ -1,14 +1,6 @@
 "use client";
 import { auth } from "@/app/firebase";
-import {
-  Button,
-  Divider,
-  Dropdown,
-  MenuProps,
-  Modal,
-  Space,
-  Typography,
-} from "antd";
+import { Divider, Dropdown, MenuProps, Modal, Space, Typography } from "antd";
 import { signOut } from "firebase/auth";
 import React, { FormEventHandler } from "react";
 import Wrapper from "../Wrapper";
@@ -53,11 +45,11 @@ const TopMenu = () => {
     },
     {
       key: "2",
-      label: <Link href="http://localhost:3000/project/users">Users</Link>,
+      label: <Link href="http://localhost:3000/company/users">Users</Link>,
     },
     {
       key: "3",
-      label: <Link href="http://localhost:3000/project/roles">Roles</Link>,
+      label: <Link href="http://localhost:3000/company/roles">Roles</Link>,
     },
   ];
 

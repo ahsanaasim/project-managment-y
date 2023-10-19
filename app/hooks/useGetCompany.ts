@@ -10,6 +10,8 @@ const useGetCompany = () => {
     const companies = (await getCompanies()) as unknown as Company[];
     const noOfCompanies = companies.length;
 
+    console.log(noOfCompanies);
+
     for (let i = 0; i < noOfCompanies; i += 1) {
       const company = companies[i];
       const tempUser = company.users[0];
