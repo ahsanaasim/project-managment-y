@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 
 const Users = () => {
   const { user, loadingUser } = useAppContext();
-  const company = useCompanyContext();
+  const { company, setCompany } = useCompanyContext();
   const router = useRouter();
   const [roles, setRoles] = useState<Role[]>(company.roles);
   const getCompanyRef = useCompanyRef();
@@ -59,6 +59,12 @@ const Users = () => {
     await updateDoc(companyRef, {
       roles,
     });
+
+    setCompany &&
+      setCompany({
+        ...company,
+        roles,
+      });
 
     setSaving(false);
     message.success("Roles saved");

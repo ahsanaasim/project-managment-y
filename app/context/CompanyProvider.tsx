@@ -11,13 +11,15 @@ import FullpageLoader from "../components/FullpageLoader";
 import useGetCompany from "../hooks/useGetCompany";
 import { useAppContext } from "./AppProvider";
 
-const CompanyContext = createContext<Company>({
-  company_id: "",
-  company_name: "",
-  company_admin_email: "",
-  projects: [],
-  users: [],
-  roles: [],
+const CompanyContext = createContext<CompanyContext>({
+  company: {
+    company_id: "",
+    company_name: "",
+    company_admin_email: "",
+    projects: [],
+    users: [],
+    roles: [],
+  },
 });
 
 const CompanyProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -48,7 +50,7 @@ const CompanyProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (loadingCompany) return <FullpageLoader />;
   return (
-    <CompanyContext.Provider value={company}>
+    <CompanyContext.Provider value={{ company, setCompany }}>
       {children}
     </CompanyContext.Provider>
   );
