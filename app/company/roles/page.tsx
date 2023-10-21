@@ -1,38 +1,31 @@
 "use client";
 
-import FullpageLoader from "@/app/components/FullpageLoader";
 import NoSSR from "@/app/components/NoSSR";
 import TopMenu from "@/app/components/TopMenu";
 import Wrapper from "@/app/components/Wrapper";
 import { useAppContext } from "@/app/context/AppProvider";
+import { useCompanyContext } from "@/app/context/CompanyProvider";
+import useCompanyRef from "@/app/hooks/useCompanyRef";
 import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Col, Input, Row, Space, Typography } from "antd";
+import { Button, Col, Input, Row, Space, Typography, message } from "antd";
+import { updateDoc } from "firebase/firestore";
+import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const Users = () => {
   const { user, loadingUser } = useAppContext();
+  const { company, setCompany } = useCompanyContext();
   const router = useRouter();
-  const [roles, setRoles] = useState<Role[]>([
-    {
-      role_id: "role1",
-      role_name: "role 1",
-    },
-    {
-      role_id: "role2",
-      role_name: "role 2",
-    },
-    {
-      role_id: "role3",
-      role_name: "role 3",
-    },
-  ]);
+  const [roles, setRoles] = useState<Role[]>(company.roles);
+  const getCompanyRef = useCompanyRef();
+  const [saving, setSaving] = useState(false);
 
   const addRoleField = () => {
     setRoles([
       ...roles,
       {
-        role_id: "",
+        role_id: nanoid(),
         role_name: "",
       },
     ]);
@@ -40,6 +33,16 @@ const Users = () => {
 
   const removeUserField = (id: string) => {
     setRoles([...roles.filter((role) => role.role_id != id)]);
+  };
+
+  const roleInput = (id: string, value: string) => {
+    setRoles(
+      roles.map((role) => {
+        if (role.role_id == id) {
+          return { ...role, role_name: value };
+        } else return role;
+      })
+    );
   };
 
   useEffect(() => {
@@ -50,7 +53,22 @@ const Users = () => {
     }
   }, [loadingUser]);
 
-  if (loadingUser || !user) return <FullpageLoader />;
+  const saveRoles = async () => {
+    setSaving(true);
+    const companyRef = await getCompanyRef();
+    await updateDoc(companyRef, {
+      roles,
+    });
+
+    setCompany &&
+      setCompany({
+        ...company,
+        roles,
+      });
+
+    setSaving(false);
+    message.success("Roles saved");
+  };
 
   return (
     <NoSSR>
@@ -70,33 +88,11 @@ const Users = () => {
               <Col span={8}>
                 <Input
                   value={role.role_name}
-                  // onChange={(e) =>
-                  //   changeStakeholders(
-                  //     stakeHolder.project_stakeholder_id,
-                  //     e.target.value,
-                  //     "project_stakeholder_name"
-                  //   )
-                  // }
-                  // name="stakeholder-name"
-                  // id="stakeholder-name"
+                  onChange={(e) => roleInput(role.role_id, e.target.value)}
                 />
               </Col>
               <Col span={8}>
                 <div style={{ display: "flex", gap: 20 }}>
-                  {/* <Input
-                    value={user.user_email}
-                    //   onChange={(e) =>
-                    //     changeStakeholders(
-                    //       stakeHolder.project_stakeholder_id,
-                    //       e.target.value,
-                    //       "project_stakeholder_email"
-                    //     )
-                    //   }
-                    style={{ width: "100%" }}
-                    type="email"
-                    name="email"
-                    id="email"
-                  /> */}
                   <Button
                     onClick={() => removeUserField(role.role_id)}
                     icon={<MinusCircleOutlined />}
@@ -106,12 +102,11 @@ const Users = () => {
               </Col>
             </Row>
           ))}
-          <Button
-            type="primary"
-            onClick={addRoleField}
-            icon={<PlusCircleOutlined />}
-          >
-            Add User
+          <Button onClick={addRoleField} icon={<PlusCircleOutlined />}>
+            Add New Role
+          </Button>
+          <Button loading={saving} type="primary" onClick={saveRoles}>
+            Save Roles
           </Button>
         </Space>
       </Wrapper>

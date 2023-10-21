@@ -112,6 +112,11 @@ type ProjectContext = {
   setProject?: Dispatch<SetStateAction<Project>>;
 };
 
+type CompanyContext = {
+  company: Company;
+  setCompany?: Dispatch<SetStateAction<Company>>;
+};
+
 // // ticket 10
 
 // type Users = {
