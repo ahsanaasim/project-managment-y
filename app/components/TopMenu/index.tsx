@@ -13,7 +13,6 @@ const TopMenu = () => {
   const { user } = useAppContext();
   const router = useRouter();
   const path = usePathname();
-  console.log(path);
 
   const logout: FormEventHandler = async () => {
     await signOut(auth);
