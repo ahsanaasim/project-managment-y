@@ -86,7 +86,12 @@ const Users = () => {
             </Col>
           </Row>
           {users.map((user, index) => (
-            <SingleRow user={user} users={users} setUsers={setUsers} />
+            <SingleRow
+              key={index}
+              user={user}
+              users={users}
+              setUsers={setUsers}
+            />
           ))}
           <Button onClick={addUserField} icon={<PlusCircleOutlined />}>
             Add User

@@ -145,8 +145,8 @@ const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
             padding: "5px",
           }}
         >
-          {user.role_id.map((id) => (
-            <Tag>
+          {user.role_id.map((id, index) => (
+            <Tag key={index}>
               <Space size="small">
                 {getRoleName(id)}
                 <CloseOutlined
