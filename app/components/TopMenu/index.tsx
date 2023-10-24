@@ -40,15 +40,15 @@ const TopMenu = () => {
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <Link href="http://localhost:3000/project/1">Projects</Link>,
+      label: <Link href="/project/1">Projects</Link>,
     },
     {
       key: "2",
-      label: <Link href="http://localhost:3000/company/users">Users</Link>,
+      label: <Link href="/company/users">Users</Link>,
     },
     {
       key: "3",
-      label: <Link href="http://localhost:3000/company/roles">Roles</Link>,
+      label: <Link href="/company/roles">Roles</Link>,
     },
   ];
 
