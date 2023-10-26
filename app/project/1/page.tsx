@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import getCompanies from "@/app/helpers/getCompanies";
 import getCompaniesCount from "@/app/helpers/getCompaniesCount";
 import useProjects from "@/app/hooks/useProjects";
+import useCompanyRef from "@/app/hooks/useCompanyRef";
 
 const Page = () => {
   const [name, setName] = useState("");
@@ -32,6 +33,7 @@ const Page = () => {
   const { user, loadingUser } = useAppContext();
   const getProjects = useProjects();
   const router = useRouter();
+  const getCompanyRef = useCompanyRef();
 
   const createProject: FormEventHandler = async (e) => {
     e.preventDefault();
@@ -40,56 +42,33 @@ const Page = () => {
     try {
       // not loggedin
       if (!user) return router.push("/auth");
-      // all companies
-      const companies = (await getCompanies()) as unknown as Company[];
-      const noOfCompanies = await getCompaniesCount();
+      console.log("logged in");
 
-      for (let i = 0; i < noOfCompanies; i += 1) {
-        const company = companies[i];
-        const tempUser = company.users[0];
-        const projects = company.projects;
+      const companyRef = await getCompanyRef();
+      const projectsRef = collection(companyRef, "projects");
 
-        if (tempUser.user_email == user.email) {
-          const newProject: Project = {
-            project_id: nanoid(),
-            project_name: name,
-            project_overview: "",
-            project_problem: "",
-            project_purpose: "",
-            project_scope: "",
-            project_link_to_plan: "",
-            project_budget: "",
-            project_outcomes_and_metrics: [],
-            project_stakeholders: [],
-            project_raci_deliverables: [],
-            project_working_groups: [],
-            project_documents: [],
-            project_recommendations_general: "",
-            project_recommendations_stakeholder: [],
-            status_updates: [],
-          };
-          projects.push(newProject);
-
-          const companiesRef = collection(db, "companies");
-          const companyQuery = query(
-            companiesRef,
-            where("company_id", "==", company.company_id)
-          );
-          const querySnapshot = await getDocs(companyQuery);
-
-          querySnapshot.forEach(async (companyDoc) => {
-            const companyDocRef = doc(db, "companies", companyDoc.id);
-            const projectsCollectionRef = collection(companyDocRef, "projects");
-
-            // Add the new project document to the projects sub-collection with a unique ID
-            await addDoc(projectsCollectionRef, newProject);
-
-            setProjects(await getProjects());
-            setFetchingProjects(false);
-            setName("");
-          });
-        }
-      }
+      const newProject: Project = {
+        project_id: nanoid(),
+        project_name: name,
+        project_overview: "",
+        project_problem: "",
+        project_purpose: "",
+        project_scope: "",
+        project_link_to_plan: "",
+        project_budget: "",
+        project_outcomes_and_metrics: [],
+        project_stakeholders: [],
+        project_raci_deliverables: [],
+        project_working_groups: [],
+        project_documents: [],
+        project_recommendations_general: "",
+        project_recommendations_stakeholder: [],
+        status_updates: [],
+      };
+      await addDoc(projectsRef, newProject);
+      setProjects(await getProjects());
+      setFetchingProjects(false);
+      setName("");
 
       console.log(user?.email);
     } catch (error) {}
