@@ -7,7 +7,6 @@ const useCompanyRef = () => {
 
   const getCompanyRef = async () => {
     const company = await getCompany();
-    console.log(company);
 
     const companiesCollectionRef = collection(db, "companies");
     const companyQuery = query(
