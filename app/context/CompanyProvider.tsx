@@ -37,18 +37,23 @@ const CompanyProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      const company = await getCompany();
+      if (user) {
+        const company = await getCompany(user);
 
-      if (!company) return null;
+        console.log(company);
 
-      setCompany(company as unknown as Company);
-      setLoadingCompany(false);
+        if (!company) return null;
+
+        setCompany(company as unknown as Company);
+        setLoadingCompany(false);
+      }
     })();
   }, [user]);
 
-  console.log(company);
+  console.log("company = ", loadingCompany);
 
   if (loadingCompany) return <FullpageLoader />;
+
   return (
     <CompanyContext.Provider value={{ company, setCompany }}>
       {children}

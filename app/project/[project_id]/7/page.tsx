@@ -1,83 +1,50 @@
 "use client";
-import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
-import ScrollInput from "@/app/components/ScrollInput";
 import Wrapper from "@/app/components/Wrapper";
 import { useProjectContext } from "@/app/context/ProjectProvider";
-import getStakeholderName from "@/app/helpers/getStakeholderName";
-import useNextConfirmation from "@/app/hooks/useNextConfirmation";
-import useProject from "@/app/hooks/useProject";
-import useProjectId from "@/app/hooks/useProjectId";
-import useProjectRef from "@/app/hooks/useProjectRef";
-import { Button, Col, Input, Row, Space, Spin, Table, Typography } from "antd";
-import { updateDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
-import React, { FormEventHandler, useEffect, useState } from "react";
+import { MinusCircleOutlined, ThunderboltFilled } from "@ant-design/icons";
+import { Button, Col, Row, Spin, Table, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import OpenAI from "openai";
 
 const Page = () => {
-  const { project, setProject } = useProjectContext();
-  const [recommendationsGeneral, setRecommendationsGeneral] = useState(
-    project.project_recommendations_general
-  );
-  const [tableData, setTableData] = useState(
-    project.project_recommendations_stakeholder
-  );
-  const [updatingProject, setUpdatingProject] = useState(false);
-  const getProjectRef = useProjectRef();
-  const getProject = useProject();
-  const projectId = useProjectId();
-  const router = useRouter();
-  const showConfirm = useNextConfirmation();
+  const { project } = useProjectContext();
+  const [data, setData] = useState(project.project_raci_deliverables);
+
+  const deleteRow = (key: string) => {
+    setData([...data.filter((row) => row.key != key)]);
+  };
 
   useEffect(() => {
-    setRecommendationsGeneral(project.project_recommendations_general);
-    setTableData(project.project_recommendations_stakeholder);
+    setData([...project.project_raci_deliverables]);
   }, [project]);
 
-  const changeInput = (key: string, column: string, value: string) => {
-    setTableData([
-      ...tableData.map((row) => {
-        if (row.key == key) {
-          return { ...row, [column]: value };
-        } else return { ...row };
-      }),
-    ]);
-  };
+  const generateRecommendation = async (
+    deliverable: ProjectRaciDeliverable1
+  ) => {
+    const recommendations = [];
+    const inputs = ["responsible", "accountable", "consulted", "informed"];
 
-  const saveRecommendations: FormEventHandler = async (e) => {
-    e.preventDefault();
-    setUpdatingProject(true);
+    for (let i = 0; i < 4; i++) {
+      const openai = new OpenAI({
+        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+        dangerouslyAllowBrowser: true,
+      });
 
-    const projectDocRef = await getProjectRef(projectId);
-    console.log(tableData);
+      const chatCompletion = await openai.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: `In 100 words or fewer, describe the competencies a ${inputs[i]} stakeholder should have for the following deliverable: ${deliverable.project_raci_deliverable_name}`,
+          },
+        ],
+        model: "gpt-3.5-turbo",
+      });
 
-    await updateDoc(projectDocRef, {
-      project_recommendations_general: recommendationsGeneral,
-      project_recommendations_stakeholder: [...tableData],
-    });
+      recommendations.push(chatCompletion);
+    }
 
-    setProject({
-      ...project,
-      project_recommendations_general: recommendationsGeneral,
-      project_recommendations_stakeholder: tableData,
-    });
-
-    router.push(`/project/1`);
-  };
-
-  const saveConfirmation = async (isNext: boolean) => {
-    console.log("rungionon");
-
-    const goingTo = isNext ? 7 : 5;
-    const projectInDB = (await getProject(projectId)) as Project;
-
-    if (
-      projectInDB.project_recommendations_general !== recommendationsGeneral ||
-      JSON.stringify(projectInDB.project_recommendations_stakeholder) !==
-        JSON.stringify(tableData)
-    ) {
-      showConfirm(projectId, goingTo);
-    } else router.push(`/project/${projectId}/${goingTo}`);
+    console.log(recommendations);
   };
 
   return (
@@ -87,122 +54,69 @@ const Page = () => {
       </Col>
       <Col span={20}>
         <Wrapper>
-          <Spin tip="Saving Recommendations" spinning={updatingProject}>
-            <Typography.Title>Recommendations</Typography.Title>
-            <form onSubmit={saveRecommendations}>
-              <Space direction="vertical" style={{ display: "flex" }}>
-                <label>General Recommendations</label>
-                <Input.TextArea
-                  value={recommendationsGeneral}
-                  onChange={(e) => setRecommendationsGeneral(e.target.value)}
-                ></Input.TextArea>
-              </Space>
-              <br />
-              <Typography.Text>Stakeholder Recommendations</Typography.Text>
-              <Table dataSource={tableData} pagination={false}>
-                <Table.Column
-                  title="Stakeholder"
-                  dataIndex="project_recommendations_stakeholder_id"
-                  key="project_recommendations_stakeholder_id"
-                  render={(stakeholderId) => {
-                    return getStakeholderName(stakeholderId, project);
-                  }}
-                />
-                <Table.Column
-                  title="Competencies"
-                  dataIndex="project_recommendations_competencies"
-                  key="project_recommendations_competencies"
-                  render={(rowData, record: { key: string }, index) => (
-                    // <Input
-                    //   value={rowData}
-                    //   onChange={(e) =>
-                    //     changeInput(
-                    //       record.key,
-                    //       "project_recommendations_competencies",
-                    //       e.target.value
-                    //     )
-                    //   }
-                    // />
-
-                    <ScrollInput
-                      name="competencies"
-                      value={rowData}
-                      onChange={(e) =>
-                        changeInput(
-                          record.key,
-                          "project_recommendations_competencies",
-                          e.target.value
-                        )
-                      }
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Resources"
-                  dataIndex="project_recommendations_resources"
-                  key="project_recommendations_resources"
-                  render={(rowData, record: { key: string }, index) => (
-                    // <Input
-                    //   value={rowData}
-                    //   onChange={(e) =>
-                    //     changeInput(
-                    //       record.key,
-                    //       "project_recommendations_resources",
-                    //       e.target.value
-                    //     )
-                    //   }
-                    // />
-
-                    <ScrollInput
-                      name="resources"
-                      value={rowData}
-                      onChange={(e) =>
-                        changeInput(
-                          record.key,
-                          "project_recommendations_resources",
-                          e.target.value
-                        )
-                      }
-                    />
-                  )}
-                />
-                <Table.Column
-                  render={() => <Button type="link">Send</Button>}
-                />
-              </Table>
-              {/* <Space
-                style={{
-                  margin: "2rem 0",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <Button
-                  style={{ width: "200px" }}
-                  href={`/project/${projectId}/6`}
-                  type="primary"
-                >
-                  Back
-                </Button>
-                <Button style={{ width: "200px" }} type="primary">
-                  Edit
-                </Button>
-                <Button
-                  htmlType="submit"
-                  style={{ width: "200px" }}
-                  type="primary"
-                >
-                  Next
-                </Button>
-              </Space> */}
-              <br />
-              <br />
-              <Footer
-                saveHandler={saveRecommendations}
-                confirmationHandlerPrevious={() => saveConfirmation(false)}
-                withoutNext
+          <Spin tip="Saving RACI Recommendations" spinning={false}>
+            <Typography.Title>RACI Recommendations</Typography.Title>
+            <Button icon={<ThunderboltFilled />}>
+              Generated Recommendations for All Deliverables
+            </Button>
+            <Table
+              dataSource={data}
+              style={{
+                marginTop: "2rem",
+                maxHeight: "500px",
+                overflowY: "scroll",
+              }}
+              pagination={false}
+            >
+              <Table.Column
+                // title="Deliverable"
+                // dataIndex="project_raci_deliverable_name"
+                // key="project_raci_deliverable_name"
+                render={(rowData, record: { key: string }, index) => (
+                  <Button
+                    icon={
+                      <ThunderboltFilled
+                        onClick={() => generateRecommendation(rowData)}
+                      />
+                    }
+                  />
+                )}
               />
-            </form>
+              <Table.Column
+                title="Deliverable"
+                dataIndex="project_raci_deliverable_name"
+                key="project_raci_deliverable_name"
+              />
+              <Table.Column
+                title="Responsible"
+                dataIndex="project_raci_responsible_recommendations"
+                key="project_raci_responsible_recommendations"
+              />
+              <Table.Column
+                title="Accountable"
+                dataIndex="project_raci_accountable_recommendations"
+                key="project_raci_accountable_recommendations"
+              />
+              <Table.Column
+                title="Consulted"
+                dataIndex="project_raci_consulted_recommendations"
+                key="project_raci_consulted_recommendations"
+              />
+              <Table.Column
+                title="Informed"
+                dataIndex="project_raci_informed_recommendations"
+                key="project_raci_informed_recommendations"
+              />
+              <Table.Column
+                render={(rowData, record: { key: string }, index) => (
+                  <Button
+                    onClick={() => deleteRow(record.key)}
+                    icon={<MinusCircleOutlined />}
+                    danger
+                  ></Button>
+                )}
+              />
+            </Table>
           </Spin>
         </Wrapper>
       </Col>

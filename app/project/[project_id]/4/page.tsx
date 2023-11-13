@@ -14,7 +14,6 @@ import {
 import { nanoid } from "nanoid";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import AddRowButton from "../AddRowButton";
-import ProjectFlowFooter from "../ProjectFlowFooter";
 import { CloseOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { useProjectContext } from "@/app/context/ProjectProvider";
 import useProjectRef from "@/app/hooks/useProjectRef";
@@ -26,10 +25,12 @@ import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import useNextConfirmation from "@/app/hooks/useNextConfirmation";
+import { useAppContext } from "@/app/context/AppProvider";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
   const [updatingProject, setUpdatingProject] = useState(false);
+  const { user } = useAppContext();
   const getProjectRef = useProjectRef();
   const projectId = useProjectId();
   const router = useRouter();
@@ -38,6 +39,8 @@ const Page = () => {
   const [data, setData] = useState<ProjectRaciDeliverable1[]>(
     project.project_raci_deliverables
   );
+
+  console.log(data);
 
   const handleOnDrop = (
     e: React.DragEvent,
@@ -162,11 +165,14 @@ const Page = () => {
   };
 
   const saveRaci: FormEventHandler = async (e) => {
+    if (!user) return;
     e.preventDefault();
 
     setUpdatingProject(true);
 
-    const projectDocRef = await getProjectRef(projectId);
+    const projectDocRef = await getProjectRef(projectId, user);
+
+    console.log(data);
 
     await updateDoc(projectDocRef, {
       project_raci_deliverables: data,
@@ -184,7 +190,7 @@ const Page = () => {
     setData([
       ...data.map((row) => {
         if (row.key == rowKey) {
-          return { ...row, project_raci_deliverables: deliverable };
+          return { ...row, project_raci_deliverable_name: deliverable };
         } else return { ...row };
       }),
     ]);
@@ -195,8 +201,9 @@ const Page = () => {
   }, [project]);
 
   const saveConfirmation = async (isNext: boolean) => {
+    if (!user) return;
     const goingTo = isNext ? 5 : 3;
-    const projectInDB = (await getProject(projectId)) as Project;
+    const projectInDB = (await getProject(user, projectId)) as Project;
 
     if (
       JSON.stringify(projectInDB.project_raci_deliverables) !==

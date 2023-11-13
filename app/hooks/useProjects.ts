@@ -1,11 +1,15 @@
 import { collection, getDocs } from "firebase/firestore";
 import useCompanyRef from "./useCompanyRef";
+import { User } from "firebase/auth";
 
 const useProjects = () => {
   const getCompanyRef = useCompanyRef();
 
-  const getProjects = async () => {
-    const projectsCollectionRef = collection(await getCompanyRef(), "projects");
+  const getProjects = async (user: User) => {
+    const projectsCollectionRef = collection(
+      await getCompanyRef(user),
+      "projects"
+    );
 
     return (await getDocs(projectsCollectionRef)).docs.map((snapshot) =>
       snapshot.data()

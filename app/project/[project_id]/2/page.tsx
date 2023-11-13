@@ -12,9 +12,11 @@ import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import useNextConfirmation from "@/app/hooks/useNextConfirmation";
+import { useAppContext } from "@/app/context/AppProvider";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
+  const { user } = useAppContext();
   const [overview, setOverview] = useState(project.project_overview);
   const [problem, setProblem] = useState(project.project_problem);
   const [purpose, setPurpose] = useState(project.project_purpose);
@@ -44,10 +46,11 @@ const Page = () => {
   // };
 
   const createProjectDetails: FormEventHandler = async (e) => {
+    if (!user) return;
     e.preventDefault();
     setUpdatingProject(true);
 
-    const projectRef = await getProjectRef(projectId);
+    const projectRef = await getProjectRef(projectId, user);
 
     await updateDoc(projectRef, {
       project_overview: overview,
@@ -71,9 +74,10 @@ const Page = () => {
   };
 
   const saveConfirmation = async () => {
+    if (!user) return;
     console.log("running");
 
-    const projectInDB = await getProject(projectId);
+    const projectInDB = await getProject(user, projectId);
     const {
       project_overview,
       project_problem,

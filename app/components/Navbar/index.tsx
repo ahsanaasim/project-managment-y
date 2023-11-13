@@ -25,7 +25,8 @@ const items: MenuItem[] = [
   getItem("RACI Stakeholders", "4"),
   getItem("Working Groups Stakeholders", "5"),
   getItem("Documents", "6"),
-  getItem("Recommendations", "7"),
+  getItem("RACI Recommendations", "7"),
+  getItem("Recommendations", "8"),
 ];
 
 const getCurrentPageNavkey = (path: string) => {

@@ -1,24 +1,35 @@
+import { User } from "firebase/auth";
 import { useAppContext } from "../context/AppProvider";
 import getCompanies from "../helpers/getCompanies";
 
 const useGetCompany = () => {
-  const { user } = useAppContext();
+  // const { user } = useAppContext();
+  // console.log("user ", user);
 
-  const getCompany = async () => {
+  const getCompany = async (user: User) => {
     if (!user) return null;
 
     const companies = (await getCompanies()) as unknown as Company[];
     const noOfCompanies = companies.length;
 
-    console.log(noOfCompanies);
+    console.log("noOfCompanies = ", noOfCompanies);
 
-    for (let i = 0; i < noOfCompanies; i += 1) {
+    for (let i = 0; i < companies.length; i++) {
+      console.log("looping companies");
       const company = companies[i];
-      const tempUser = company.users[0];
+      console.log(company.company_id);
 
-      if (tempUser.user_email == user.email) {
-        return company;
-      }
+      console.log(company.users);
+
+      const tempUser = company.users.filter(
+        (tempUser) => tempUser.user_email == user.email
+      );
+
+      console.log(tempUser);
+
+      // if (!tempUser.length) return null;
+
+      if (tempUser.length) return company;
     }
 
     return null;

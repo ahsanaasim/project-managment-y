@@ -14,9 +14,11 @@ import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import useNextConfirmation from "@/app/hooks/useNextConfirmation";
+import { useAppContext } from "@/app/context/AppProvider";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
+  const { user } = useAppContext();
   const [budget, setBudget] = useState("");
   const [outcomes, setOutcomes] = useState<ProjectOutcomesAndMetric[]>(
     project.project_outcomes_and_metrics
@@ -99,6 +101,7 @@ const Page = () => {
   };
 
   const saveStakeholders: FormEventHandler = async (e) => {
+    if (!user) return;
     e.preventDefault();
     setUpdatingProject(true);
 
@@ -110,7 +113,7 @@ const Page = () => {
     ];
     setStakeHolders([...finalStakeholders]);
 
-    const projectDocRef = await getProjectRef(projectId);
+    const projectDocRef = await getProjectRef(projectId, user);
 
     const project_recommendations_stakeholder = finalStakeholders.map(
       (stakeHolder) => {
@@ -143,8 +146,9 @@ const Page = () => {
   };
 
   const saveConfirmation = async (isNext: boolean) => {
+    if (!user) return;
     const goingTo = isNext ? 4 : 2;
-    const projectInDB = await getProject(projectId);
+    const projectInDB = await getProject(user, projectId);
     const {
       project_budget,
       project_outcomes_and_metrics,

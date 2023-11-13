@@ -33,11 +33,13 @@ import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import useNextConfirmation from "@/app/hooks/useNextConfirmation";
+import { useAppContext } from "@/app/context/AppProvider";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
+  const { user } = useAppContext();
   const [tableData, setTableData] = useState<ProjectWorkingGroup[]>(
     project.project_working_groups
   );
@@ -239,10 +241,11 @@ const Page = () => {
   };
 
   const saveWorkingGroups: FormEventHandler = async (e) => {
+    if (!user) return;
     e.preventDefault();
     setUpdatingProject(true);
 
-    const projectDocRef = await getProjectRef(projectId);
+    const projectDocRef = await getProjectRef(projectId, user);
 
     await updateDoc(projectDocRef, {
       project_working_groups: tableData,
@@ -309,8 +312,9 @@ const Page = () => {
   };
 
   const saveConfirmation = async (isNext: boolean) => {
+    if (!user) return;
     const goingTo = isNext ? 6 : 4;
-    const projectInDB = (await getProject(projectId)) as Project;
+    const projectInDB = (await getProject(user, projectId)) as Project;
 
     if (
       JSON.stringify(projectInDB.project_raci_deliverables) !==

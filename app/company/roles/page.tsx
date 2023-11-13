@@ -54,21 +54,25 @@ const Users = () => {
   }, [loadingUser]);
 
   const saveRoles = async () => {
-    setSaving(true);
-    const companyRef = await getCompanyRef();
-    await updateDoc(companyRef, {
-      roles,
-    });
-
-    setCompany &&
-      setCompany({
-        ...company,
+    if (user) {
+      setSaving(true);
+      const companyRef = await getCompanyRef(user);
+      await updateDoc(companyRef, {
         roles,
       });
 
-    setSaving(false);
-    message.success("Roles saved");
+      setCompany &&
+        setCompany({
+          ...company,
+          roles,
+        });
+
+      setSaving(false);
+      message.success("Roles saved");
+    }
   };
+
+  console.log("loading = ", loadingUser, "user = ", user);
 
   return (
     <NoSSR>

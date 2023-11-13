@@ -110,6 +110,9 @@ const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
     });
   };
 
+  // console.log(user);
+
+  // return "";
   return (
     <Row gutter={20}>
       <Col span={8}>
