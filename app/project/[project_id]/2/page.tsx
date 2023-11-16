@@ -86,9 +86,6 @@ const Page = () => {
       project_link_to_plan,
     } = projectInDB as Project;
 
-    console.log("project from db", projectInDB);
-    console.log("project from local", project);
-
     if (
       project_overview !== overview ||
       project_problem !== problem ||

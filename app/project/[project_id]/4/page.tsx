@@ -10,6 +10,7 @@ import {
   Table,
   Tag,
   Typography,
+  message,
 } from "antd";
 import { nanoid } from "nanoid";
 import React, { FormEventHandler, useEffect, useState } from "react";
@@ -183,7 +184,9 @@ const Page = () => {
       project_raci_deliverables: data,
     });
 
-    router.push(`/project/${projectId}/5`);
+    // router.push(`/project/${projectId}/5`);
+    setUpdatingProject(false);
+    message.success("Saved");
   };
 
   const changeDeliverable = (rowKey: string, deliverable: string) => {

@@ -45,8 +45,6 @@ const Page = () => {
   const router = useRouter();
   const showConfirm = useNextConfirmation();
 
-  console.log("documents => ", documents);
-
   useEffect(() => {
     setDocuments(project.project_documents);
   }, [project]);
@@ -88,10 +86,15 @@ const Page = () => {
         project_documents: [...documents, ...fileNames],
       });
 
-      router.push(`/project/${projectId}/7`);
+      // router.push(`/project/${projectId}/7`);
+      setUploading(false);
+      message.success("Uploaded");
+      setFileList(undefined);
+    } else {
+      // router.push(`/project/${projectId}/7`);
+      setUploading(false);
+      message.success("Saved");
     }
-
-    router.push(`/project/${projectId}/7`);
   };
 
   const deleteFile = async (fileLink: string) => {
@@ -169,13 +172,32 @@ const Page = () => {
               />{" "}
               <br />
               <form onSubmit={uploadDocuments}>
-                <input
+                {fileList ? (
+                  <input
+                    type="file"
+                    name="documents"
+                    id="documents"
+                    onChange={handleChange}
+                    multiple
+                  />
+                ) : (
+                  <input
+                    type="file"
+                    name="documents"
+                    id="documents"
+                    onChange={handleChange}
+                    value=""
+                    multiple
+                  />
+                )}
+                {/* <input
                   type="file"
                   name="documents"
                   id="documents"
                   onChange={handleChange}
+                  value={""}
                   multiple
-                />
+                /> */}
                 <br />
                 <br />
                 <Button type="primary">Generate Recommendations</Button>

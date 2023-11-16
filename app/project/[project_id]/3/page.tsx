@@ -1,6 +1,15 @@
 "use client";
 import Wrapper from "@/app/components/Wrapper";
-import { Button, Col, Input, Row, Space, Spin, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Input,
+  Row,
+  Space,
+  Spin,
+  Typography,
+  message,
+} from "antd";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
@@ -142,7 +151,9 @@ const Page = () => {
       // project_recommendations_stakeholder,
     });
 
-    router.push(`/project/${projectId}/4`);
+    // router.push(`/project/${projectId}/4`);
+    setUpdatingProject(false);
+    message.success("Saved");
   };
 
   const saveConfirmation = async (isNext: boolean) => {

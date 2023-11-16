@@ -12,6 +12,7 @@ import {
   Table,
   Tag,
   Typography,
+  message,
 } from "antd";
 import { nanoid } from "nanoid";
 import React, { FormEventHandler, useEffect, useState } from "react";
@@ -256,7 +257,9 @@ const Page = () => {
       project_working_groups: tableData,
     });
 
-    router.push(`/project/${projectId}/6`);
+    // router.push(`/project/${projectId}/6`);
+    setUpdatingProject(false);
+    message.success("Saved");
   };
 
   const changeRoleResponsibility = (
