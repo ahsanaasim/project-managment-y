@@ -60,15 +60,21 @@ const Users = () => {
     if (user) {
       setSaving(true);
 
+      // remove empty fields
+      const finalUsers = [
+        ...users.filter((user) => user.user_name && user.user_email),
+      ];
+      setUsers([...finalUsers]);
+
       // check if email available
       // in original users list in db
       for (let i = 0; i < company.users.length; i++) {
-        for (let j = 0; j < users.length; j++) {
-          if (company.users[i].user_id !== users[j].user_id) {
-            if (company.users[i].user_email == users[j].user_email) {
+        for (let j = 0; j < finalUsers.length; j++) {
+          if (company.users[i].user_id !== finalUsers[j].user_id) {
+            if (company.users[i].user_email == finalUsers[j].user_email) {
               setSaving(false);
               return message.error(
-                `Email address ${users[j].user_email} is already in use`
+                `Email address ${finalUsers[j].user_email} is already in use`
               );
             }
           }
@@ -76,13 +82,13 @@ const Users = () => {
       }
 
       // in current list
-      for (let i = 0; i < users.length; i++) {
-        for (let j = 0; j < users.length; j++) {
-          if (users[i].user_id !== users[j].user_id) {
-            if (users[i].user_email == users[j].user_email) {
+      for (let i = 0; i < finalUsers.length; i++) {
+        for (let j = 0; j < finalUsers.length; j++) {
+          if (finalUsers[i].user_id !== finalUsers[j].user_id) {
+            if (finalUsers[i].user_email == finalUsers[j].user_email) {
               setSaving(false);
               return message.error(
-                `Email address ${users[j].user_email} is already in use`
+                `Email address ${finalUsers[j].user_email} is already in use`
               );
             }
           }
@@ -91,13 +97,13 @@ const Users = () => {
 
       const companyRef = await getCompanyRef(user);
       await updateDoc(companyRef, {
-        users: [...users, { ...adminUser }],
+        users: [...finalUsers, { ...adminUser }],
       });
 
       setCompany &&
         setCompany({
           ...company,
-          users: [...users, { ...adminUser }],
+          users: [...finalUsers, { ...adminUser }],
         });
 
       setSaving(false);
@@ -136,6 +142,7 @@ const Users = () => {
               user={user}
               users={users}
               setUsers={setUsers}
+              adminUser={adminUser}
             />
           ))}
           <Button onClick={addUserField} icon={<PlusCircleOutlined />}>
