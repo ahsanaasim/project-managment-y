@@ -54,20 +54,27 @@ const Users = () => {
   }, [loadingUser]);
 
   const saveRoles = async () => {
-    setSaving(true);
-    const companyRef = await getCompanyRef();
-    await updateDoc(companyRef, {
-      roles,
-    });
+    if (user) {
+      setSaving(true);
 
-    setCompany &&
-      setCompany({
-        ...company,
-        roles,
+      // remove empty fields
+      const finalRoles = [...roles.filter((role) => role.role_name)];
+      setRoles([...finalRoles]);
+
+      const companyRef = await getCompanyRef(user);
+      await updateDoc(companyRef, {
+        roles: [...finalRoles],
       });
 
-    setSaving(false);
-    message.success("Roles saved");
+      setCompany &&
+        setCompany({
+          ...company,
+          roles: [...finalRoles],
+        });
+
+      setSaving(false);
+      message.success("Roles saved");
+    }
   };
 
   return (

@@ -13,12 +13,14 @@ import React, { useEffect, useState } from "react";
 import SingleRow from "./SingleRow";
 import useCompanyRef from "@/app/hooks/useCompanyRef";
 import { updateDoc } from "firebase/firestore";
+import { nanoid } from "nanoid";
 
 const Users = () => {
   const { user, loadingUser } = useAppContext();
   const router = useRouter();
   const { company, setCompany } = useCompanyContext();
   const [users, setUsers] = useState<User[]>(company.users);
+  const [adminUser, setAdminUser] = useState<User>();
   const [saving, setSaving] = useState(false);
   const getCompanyRef = useCompanyRef();
 
@@ -26,7 +28,7 @@ const Users = () => {
     setUsers([
       ...users,
       {
-        user_id: "",
+        user_id: nanoid(),
         user_name: "",
         user_email: "",
         role_id: [],
@@ -41,23 +43,72 @@ const Users = () => {
         router.push("/auth");
       }
     }
+
+    setUsers(
+      users.filter((tempUser) => {
+        if (tempUser.user_email == user?.email) {
+          setAdminUser(tempUser);
+          return false;
+        }
+
+        return true;
+      })
+    );
   }, [loadingUser]);
 
   const saveUsers = async () => {
-    setSaving(true);
-    const companyRef = await getCompanyRef();
-    await updateDoc(companyRef, {
-      users,
-    });
+    if (user) {
+      setSaving(true);
 
-    setCompany &&
-      setCompany({
-        ...company,
-        users,
+      // remove empty fields
+      const finalUsers = [
+        ...users.filter((user) => user.user_name && user.user_email),
+      ];
+      setUsers([...finalUsers]);
+
+      // check if email available
+      // in original users list in db
+      for (let i = 0; i < company.users.length; i++) {
+        for (let j = 0; j < finalUsers.length; j++) {
+          if (company.users[i].user_id !== finalUsers[j].user_id) {
+            if (company.users[i].user_email == finalUsers[j].user_email) {
+              setSaving(false);
+              return message.error(
+                `Email address ${finalUsers[j].user_email} is already in use`
+              );
+            }
+          }
+        }
+      }
+
+      // in current list
+      for (let i = 0; i < finalUsers.length; i++) {
+        for (let j = 0; j < finalUsers.length; j++) {
+          if (finalUsers[i].user_id !== finalUsers[j].user_id) {
+            if (finalUsers[i].user_email == finalUsers[j].user_email) {
+              setSaving(false);
+              return message.error(
+                `Email address ${finalUsers[j].user_email} is already in use`
+              );
+            }
+          }
+        }
+      }
+
+      const companyRef = await getCompanyRef(user);
+      await updateDoc(companyRef, {
+        users: [...finalUsers, { ...adminUser }],
       });
 
-    setSaving(false);
-    message.success("Users saved");
+      setCompany &&
+        setCompany({
+          ...company,
+          users: [...finalUsers, { ...adminUser }],
+        });
+
+      setSaving(false);
+      message.success("Users saved");
+    }
   };
 
   if (loadingUser || !user) return <FullpageLoader />;
@@ -91,13 +142,14 @@ const Users = () => {
               user={user}
               users={users}
               setUsers={setUsers}
+              adminUser={adminUser}
             />
           ))}
           <Button onClick={addUserField} icon={<PlusCircleOutlined />}>
             Add User
           </Button>
           <Button loading={saving} type="primary" onClick={saveUsers}>
-            Save Roles
+            Save Users
           </Button>
         </Space>
       </Wrapper>

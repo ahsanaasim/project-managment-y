@@ -44,7 +44,7 @@ const Page = () => {
       if (!user) return router.push("/auth");
       console.log("logged in");
 
-      const companyRef = await getCompanyRef();
+      const companyRef = await getCompanyRef(user);
       const projectsRef = collection(companyRef, "projects");
 
       const newProject: Project = {
@@ -66,11 +66,9 @@ const Page = () => {
         status_updates: [],
       };
       await addDoc(projectsRef, newProject);
-      setProjects(await getProjects());
+      setProjects(await getProjects(user));
       setFetchingProjects(false);
       setName("");
-
-      console.log(user?.email);
     } catch (error) {}
   };
 
@@ -80,8 +78,8 @@ const Page = () => {
         router.push("/auth");
       } else {
         (async () => {
-          setProjects(await getProjects());
-          console.log(await getProjects());
+          setProjects(await getProjects(user));
+          console.log(await getProjects(user));
 
           setFetchingProjects(false);
         })();

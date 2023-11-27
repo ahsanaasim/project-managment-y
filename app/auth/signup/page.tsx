@@ -3,12 +3,13 @@ import React, { FormEventHandler, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Space, Typography, message } from "antd";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/app/firebase";
+import { auth, db } from "@/app/firebase";
 import { FirebaseError } from "firebase/app";
 import { useRouter } from "next/navigation";
 import useGoogleSignIn from "@/app/helpers/googleSignIn";
 import checkUsernameAvailability from "@/app/helpers/checkUsernameAvailability";
 import registerUserAfterSignUp from "@/app/helpers/registerUserAfterSignUp";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 const App: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -32,18 +33,18 @@ const App: React.FC = () => {
         // save to companies collection
         await registerUserAfterSignUp(username, email);
 
+        // user collection
+        const userDocumentRef = doc(collection(db, "users"));
+        await setDoc(userDocumentRef, {
+          user_email_address: email,
+        });
+
         setEmail("");
         setPassword("");
         setUsername("");
 
         router.push("/project/1");
       }
-
-      // user collection
-      // const userDocumentRef = doc(collection(db, "users"));
-      // await setDoc(userDocumentRef, {
-      //   user_email_address: response.user.email,
-      // });
     } catch (error) {
       if (error instanceof FirebaseError) {
         const { code } = error;

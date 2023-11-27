@@ -6,6 +6,7 @@ import { getDoc } from "firebase/firestore";
 import { usePathname } from "next/navigation";
 import { nanoid } from "nanoid";
 import useProject from "../hooks/useProject";
+import { useAppContext } from "./AppProvider";
 
 const projectState = {
   project_id: "",
@@ -31,16 +32,19 @@ const context = createContext<ProjectContext>({ project: projectState });
 const ProjectProvider = ({ children }: { children: React.ReactNode }) => {
   const [project, setProject] = useState<Project>(projectState);
   const [loadingProject, setLoadingProject] = useState(false);
+  const { user } = useAppContext();
   const getProject = useProject();
   const path = usePathname();
   const projectId = path.split("/")[2];
 
   useEffect(() => {
     (async () => {
-      const project = await getProject(projectId);
+      if (user) {
+        const project = await getProject(user, projectId);
 
-      setProject({ ...(project as unknown as Project) });
-      setLoadingProject(false);
+        setProject({ ...(project as unknown as Project) });
+        setLoadingProject(false);
+      }
     })();
   }, []);
 

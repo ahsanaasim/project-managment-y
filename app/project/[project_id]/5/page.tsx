@@ -12,6 +12,7 @@ import {
   Table,
   Tag,
   Typography,
+  message,
 } from "antd";
 import { nanoid } from "nanoid";
 import React, { FormEventHandler, useEffect, useState } from "react";
@@ -33,11 +34,14 @@ import ScrollInput from "@/app/components/ScrollInput";
 import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import useNextConfirmation from "@/app/hooks/useNextConfirmation";
+import { useAppContext } from "@/app/context/AppProvider";
+import _ from "lodash";
 
 // const stakeholders = ["name 1", "name 2", "name 3", "name 4"];
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
+  const { user } = useAppContext();
   const [tableData, setTableData] = useState<ProjectWorkingGroup[]>(
     project.project_working_groups
   );
@@ -210,7 +214,7 @@ const Page = () => {
             project_wg_item: [
               ...table.project_wg_item,
               {
-                key: "",
+                key: nanoid(),
                 project_wg_role: "",
                 project_wg_responsibilities: "",
                 project_wg_stakeholders: [],
@@ -239,10 +243,11 @@ const Page = () => {
   };
 
   const saveWorkingGroups: FormEventHandler = async (e) => {
+    if (!user) return;
     e.preventDefault();
     setUpdatingProject(true);
 
-    const projectDocRef = await getProjectRef(projectId);
+    const projectDocRef = await getProjectRef(projectId, user);
 
     await updateDoc(projectDocRef, {
       project_working_groups: tableData,
@@ -253,7 +258,9 @@ const Page = () => {
       project_working_groups: tableData,
     });
 
-    router.push(`/project/${projectId}/6`);
+    // router.push(`/project/${projectId}/6`);
+    setUpdatingProject(false);
+    message.success("Saved");
   };
 
   const changeRoleResponsibility = (
@@ -309,15 +316,15 @@ const Page = () => {
   };
 
   const saveConfirmation = async (isNext: boolean) => {
+    if (!user) return;
     const goingTo = isNext ? 6 : 4;
-    const projectInDB = (await getProject(projectId)) as Project;
+    const projectInDB = (await getProject(user, projectId)) as Project;
 
-    if (
-      JSON.stringify(projectInDB.project_raci_deliverables) !==
-      JSON.stringify(tableData)
-    ) {
+    if (!_.isEqual(projectInDB.project_working_groups, tableData)) {
       showConfirm(projectId, goingTo);
-    } else router.push(`/project/${projectId}/${goingTo}`);
+    } else {
+      router.push(`/project/${projectId}/${goingTo}`);
+    }
   };
 
   return (

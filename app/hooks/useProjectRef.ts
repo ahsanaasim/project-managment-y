@@ -1,12 +1,13 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import useCompanyRef from "./useCompanyRef";
 import { db } from "../firebase";
+import { User } from "firebase/auth";
 
 const useProjectRef = () => {
   const getCompanyRef = useCompanyRef();
 
-  const getProjectRef = async (projectId: string) => {
-    const companyRef = await getCompanyRef();
+  const getProjectRef = async (projectId: string, user: User) => {
+    const companyRef = await getCompanyRef(user);
     const projectsRef = collection(companyRef, "projects");
     const projectQuery = query(
       projectsRef,

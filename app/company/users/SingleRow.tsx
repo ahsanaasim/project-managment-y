@@ -7,23 +7,26 @@ type Props = {
   user: User;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  adminUser: User | undefined;
 };
 
-const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
+const SingleRow: FC<Props> = ({ user, users, setUsers, adminUser }) => {
   const { company } = useCompanyContext();
-  const [currentSelectedUserName, setCurrentSelectedUserName] = useState(
-    user.user_name
-  );
+  // const [currentSelectedUserName, setCurrentSelectedUserName] = useState(
+  //   user.user_name
+  // );
   const [currentRole, setCurrentRole] = useState("");
   const roles = company.roles;
   const roleOptions = company.roles.map((role) => ({
     label: role.role_name,
     value: role.role_id,
   }));
-  const userOptions = company.users.map((user) => ({
-    label: user.user_name,
-    value: user.user_id,
-  }));
+  const userOptions = company.users
+    .filter((user) => user.user_email !== adminUser?.user_email)
+    .map((user) => ({
+      label: user.user_name,
+      value: user.user_id,
+    }));
 
   const removeUserField = (id: string) => {
     setUsers([...users.filter((user) => user.user_id != id)]);
@@ -50,39 +53,8 @@ const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
     ]);
   };
 
-  // const searchRoles = (text: string) => {
-  //   const filteredRoles = roles.filter((role) => role.role_name.includes(text));
-
-  //   setRoleOptions(
-  //     filteredRoles.map((role) => ({
-  //       label: role.role_name,
-  //       value: role.role_id,
-  //     }))
-  //   );
-  // };
-
   const getUserName = (id: string) =>
     users.filter((user) => user.user_id == id)[0].user_name;
-
-  // const searchUser = (
-  //   userId: string,
-  //   fieldName: keyof User,
-  //   searchText: string
-  // ) => {
-  //   // onChange(userId, fieldName, searchText);
-  //   // console.log(userOptions);
-
-  //   const filteredUsers = users.filter((user) =>
-  //     user.user_name.includes(searchText)
-  //   );
-
-  //   setUserOptions(
-  //     filteredUsers.map((user) => ({
-  //       label: user.user_id,
-  //       value: user.user_name,
-  //     }))
-  //   );
-  // };
 
   const setUser = (newUser: User) => {
     setUsers([
@@ -95,9 +67,6 @@ const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
   };
 
   const removeRole = (roleId: string) => {
-    console.log(user.role_id);
-    console.log(roleId);
-
     setUser({
       ...user,
       role_id: [
@@ -110,6 +79,10 @@ const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
     });
   };
 
+  console.log("userOptions => ", userOptions);
+  console.log("users => ", users);
+  console.log("company => ", company);
+
   return (
     <Row gutter={20}>
       <Col span={8}>
@@ -120,16 +93,16 @@ const SingleRow: FC<Props> = ({ user, users, setUsers }) => {
               else return false;
             } else return false;
           }}
-          value={currentSelectedUserName}
+          value={user.user_name}
           style={{ width: 200 }}
           options={userOptions}
           onSelect={(value) => {
             const userName = getUserName(value);
-            setCurrentSelectedUserName(userName);
+            // setCurrentSelectedUserName(userName);
             setUser({ ...user, user_name: userName });
           }}
           onChange={(value) => {
-            setCurrentSelectedUserName(value);
+            // setCurrentSelectedUserName(value);
             setUser({ ...user, user_name: value });
           }}
           placeholder="Name"

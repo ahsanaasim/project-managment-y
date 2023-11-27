@@ -20,12 +20,14 @@
     "lodash": "^4.17.21",
     "nanoid": "^4.0.2",
     "next": "13.4.9",
+    "openai": "^4.15.4",
     "react": "18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "18.2.0",
     "typescript": "5.1.6"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.201",
     "@types/react-beautiful-dnd": "^13.1.4"
   }
 }
