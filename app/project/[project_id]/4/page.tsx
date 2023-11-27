@@ -27,6 +27,7 @@ import Footer from "@/app/components/Footer";
 import useProject from "@/app/hooks/useProject";
 import useNextConfirmation from "@/app/hooks/useNextConfirmation";
 import { useAppContext } from "@/app/context/AppProvider";
+import _ from "lodash";
 
 const Page = () => {
   const { project, setProject } = useProjectContext();
@@ -40,8 +41,6 @@ const Page = () => {
   const [data, setData] = useState<ProjectRaciDeliverable1[]>(
     project.project_raci_deliverables
   );
-
-  console.log(data);
 
   const handleOnDrop = (
     e: React.DragEvent,
@@ -173,8 +172,6 @@ const Page = () => {
 
     const projectDocRef = await getProjectRef(projectId, user);
 
-    console.log(data);
-
     await updateDoc(projectDocRef, {
       project_raci_deliverables: data,
     });
@@ -208,12 +205,19 @@ const Page = () => {
     const goingTo = isNext ? 5 : 3;
     const projectInDB = (await getProject(user, projectId)) as Project;
 
-    if (
-      JSON.stringify(projectInDB.project_raci_deliverables) !==
-      JSON.stringify(data)
-    ) {
+    console.log("from db", projectInDB.project_raci_deliverables);
+    console.log("local", data);
+
+    if (!_.isEqual(projectInDB.project_raci_deliverables, data))
       showConfirm(projectId, goingTo);
-    } else router.push(`/project/${projectId}/${goingTo}`);
+    else router.push(`/project/${projectId}/${goingTo}`);
+
+    // if (
+    //   JSON.stringify(projectInDB.project_raci_deliverables) !==
+    //   JSON.stringify(data)
+    // ) {
+    //   showConfirm(projectId, goingTo);
+    // } else router.push(`/project/${projectId}/${goingTo}`);
   };
 
   return (
@@ -279,15 +283,9 @@ const Page = () => {
                 >
                   <Table.Column
                     title="Deliverable"
-                    dataIndex="project_raci_deliverable"
-                    key="project_raci_deliverable"
+                    dataIndex="project_raci_deliverable_name"
+                    key="project_raci_deliverable_name"
                     render={(rowData, record: { key: string }, index) => (
-                      // <Input
-                      //   value={rowData}
-                      //   onChange={(e) =>
-                      //     changeDeliverable(record.key, e.target.value)
-                      //   }
-                      // />
                       <ScrollInput
                         name="deliverable"
                         value={rowData}
